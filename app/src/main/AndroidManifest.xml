@@ -61,7 +61,9 @@
 
         <activity android:name=".activity.DrawMapActivity" />
         <activity android:name=".common.TestActivity" />
-        <activity android:name=".activity.MapActivity"></activity>
+        <activity android:name=".activity.MapActivity" />
+        <activity android:name=".activity.LoginActivity" />
+        <activity android:name=".activity.EmployeeActivity"></activity>
     </application>
 
 </manifest>

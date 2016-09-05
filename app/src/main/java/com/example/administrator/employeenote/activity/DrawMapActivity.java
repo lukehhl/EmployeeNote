@@ -105,7 +105,7 @@ public class DrawMapActivity extends Activity implements View.OnClickListener {
 
         mMapView.showZoomControls(false);
         mHandler = new Handler(Looper.getMainLooper());
-        init();
+        initView();
 //         初始化OnTrackListener
         initOnTrackListener();
     }
@@ -113,7 +113,7 @@ public class DrawMapActivity extends Activity implements View.OnClickListener {
     /**
      * 初始化
      */
-    private void init() {
+    private void initView() {
 
         tapp = (TrackApplication) getApplication();
         btnDate = (Button) findViewById(R.id.btn_date);
