@@ -4,13 +4,40 @@ package com.example.administrator.employeenote.entity.Employee;
  * Created by GE11522 on 2016-9-5.
  */
 public class EmployeeData {
-    private String eid,ename,ejob,edepart;
+    private String eid,ename,ejob,edepart,etele,ephone,eemail;
 
-    public EmployeeData(String eid, String ename, String ejob, String edepart) {
+    public EmployeeData(String eid, String ename, String ejob, String edepart, String etele, String ephone, String eemail) {
         this.eid = eid;
         this.ename = ename;
         this.ejob = ejob;
         this.edepart = edepart;
+        this.etele = etele;
+        this.ephone = ephone;
+        this.eemail = eemail;
+    }
+
+    public String getEtele() {
+        return etele;
+    }
+
+    public void setEtele(String etele) {
+        this.etele = etele;
+    }
+
+    public String getEphone() {
+        return ephone;
+    }
+
+    public void setEphone(String ephone) {
+        this.ephone = ephone;
+    }
+
+    public String getEemail() {
+        return eemail;
+    }
+
+    public void setEemail(String eemail) {
+        this.eemail = eemail;
     }
 
     public String getEid() {

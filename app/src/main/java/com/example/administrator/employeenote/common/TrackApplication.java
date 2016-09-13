@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.widget.Toast;
 
 import com.baidu.mapapi.SDKInitializer;
+import com.baidu.trace.Trace;
 
 /**
  * Created by Administrator on 2016/8/13.
@@ -13,14 +14,25 @@ import com.baidu.mapapi.SDKInitializer;
 public class TrackApplication extends Application {
     private static Context context;
     private static Boolean exit;
+    private static Trace trace = null;
+    private static long serviceId = 122424;
+    private String eid;
+
+    public String getEid() {
+        return eid;
+    }
+
+    public void setEid(String eid) {
+        this.eid = eid;
+    }
 
     @Override
     public void onCreate() {
-        // TODO Auto-generated method stub
         super.onCreate();
         SDKInitializer.initialize(getApplicationContext());
         context = getApplicationContext();
         exit = false;
+        eid = null;
     }
 
     public static Context getContext() {
@@ -33,6 +45,18 @@ public class TrackApplication extends Application {
 
     public void setExit(Boolean exit) {
         this.exit = exit;
+    }
+
+    public static void setTrace(Trace trace) {
+        TrackApplication.trace = trace;
+    }
+
+    public static Trace getTrace() {
+        return trace;
+    }
+
+    public static long getServiceId() {
+        return serviceId;
     }
 
     public static void showMessage(String message) {

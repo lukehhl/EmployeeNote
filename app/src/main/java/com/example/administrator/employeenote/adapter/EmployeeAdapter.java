@@ -43,6 +43,7 @@ public class EmployeeAdapter extends BaseAdapter{
             hold.nameView = (TextView) convertView.findViewById(R.id.ename);
             hold.jobView = (TextView) convertView.findViewById(R.id.ejob);
             hold.departView = (TextView) convertView.findViewById(R.id.edepart);
+            hold.localView = (TextView) convertView.findViewById(R.id.elocal);
             convertView.setTag(hold);
         } else {
             hold = (ViewHold) convertView.getTag();
@@ -51,12 +52,13 @@ public class EmployeeAdapter extends BaseAdapter{
         hold.nameView.setText(data.get(position).getEname());
         hold.jobView.setText(data.get(position).getEjob());
         hold.departView.setText(data.get(position).getEdepart());
+        //TODO 获取实时位置点
         return convertView;
     }
 
     class ViewHold {
         //public ImageView image;
-        public TextView nameView, jobView, departView;
+        public TextView nameView, jobView, departView, localView;
     }
 
 

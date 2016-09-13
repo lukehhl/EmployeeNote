@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                     et.putString("password", password);
                 } else et.clear();
                 et.commit();
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                Intent intent = new Intent(LoginActivity.this, HomePageActivity.class);
                 startActivity(intent);
                 finish();
             } else {
