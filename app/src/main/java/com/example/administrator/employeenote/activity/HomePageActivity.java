@@ -1,17 +1,20 @@
 package com.example.administrator.employeenote.activity;
 
-import android.app.Application;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.common.TrackApplication;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +27,7 @@ public class HomePageActivity extends AppCompatActivity {
     // 图片封装为一个数组
     private int[] icon = {R.mipmap.ic_launcher, R.mipmap.ic_launcher,
             R.mipmap.ic_launcher};
-    private String[] iconName = {"我的上级", "我的下属", "其他"};
+    private String[] iconName = {"我的上级", "我的下属", "我的行程"};
     private TrackApplication tapp;
 
     @Override
@@ -42,13 +45,29 @@ public class HomePageActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        goToAttract("up");
+                        File appCacheDir = HomePageActivity.this.getCacheDir();
+                        Toast.makeText(HomePageActivity.this, appCacheDir.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+                        goToAttract("up", EmployeeListActivity.class);
                         break;
                     case 1:
-                        goToAttract("down");
+                        goToAttract("down", EmployeeListActivity.class);
                         break;
                     case 2:
-                        goToAttract("other");
+                        AlertDialog.Builder builder = new AlertDialog.Builder(HomePageActivity.this);
+                        builder.setItems(new String[]{"新增行程", "查看行程"}, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which) {
+                                    case 0:
+                                        goToAttract("addmission", AddMissionActivity.class);
+                                        break;
+                                    case 1:
+                                        goToAttract("mission", MissionActivity.class);
+                                        break;
+                                }
+                            }
+                        });
+                        builder.show();
                         break;
                 }
             }
@@ -57,8 +76,8 @@ public class HomePageActivity extends AppCompatActivity {
     }
 
     //跳转
-    public void goToAttract(String type) {
-        Intent intent = new Intent(this, EmployeeListActivity.class);
+    public void goToAttract(String type, Class<?> cls) {
+        Intent intent = new Intent(this, cls);
         intent.putExtra("eid", tapp.getEid());
         intent.putExtra("type", type);
         startActivity(intent);
