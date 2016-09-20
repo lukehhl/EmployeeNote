@@ -34,6 +34,8 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
     <uses-permission android:name="android.permission.GET_TASKS" />
+    <!-- 录音权限 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:name=".common.TrackApplication"
@@ -66,7 +68,11 @@
         <activity android:name=".activity.LoginActivity" />
         <activity android:name=".activity.EmployeeListActivity" />
         <activity android:name=".activity.EmployeeActivity" />
-        <activity android:name=".activity.HomePageActivity"></activity>
+        <activity android:name=".activity.HomePageActivity" />
+        <activity android:name=".activity.MissionActivity" />
+        <activity android:name=".activity.AddMissionActivity" />
+        <activity android:name=".activity.SetUpActivity" />
+        <activity android:name=".activity.DrawTraceActivity"></activity>
     </application>
 
 </manifest>

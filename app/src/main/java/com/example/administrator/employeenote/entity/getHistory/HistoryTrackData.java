@@ -1,5 +1,7 @@
 package com.example.administrator.employeenote.entity.getHistory;
 
+import android.util.Log;
+
 import com.baidu.mapapi.model.LatLng;
 
 import java.util.ArrayList;
@@ -133,7 +135,6 @@ public class HistoryTrackData {
 
         if (points == null || points.size() == 0) {
             return null;
-
         }
         Iterator<Points> it = points.iterator();
 
@@ -150,7 +151,26 @@ public class HistoryTrackData {
 
         }
         return list;
+    }
 
+    public List<LatLng> getTimePoints(int ts, int te) {
+        List<LatLng> list = new ArrayList<LatLng>();
+
+        if (points == null || points.size() == 0) {
+            return null;
+        }
+
+        for (int i = 0; Integer.valueOf(points.get(i).getLoc_time()) > ts && Integer.valueOf(points.get(i).getLoc_time()) < te; i++) {
+            List<Double> location = points.get(i).getLocation();
+            if (Math.abs(location.get(0) - 0.0) < 0.01 && Math.abs(location.get(1) - 0.0) < 0.01) {
+                continue;
+            } else {
+                LatLng latLng = new LatLng(location.get(1), location.get(0));
+                list.add(latLng);
+            }
+        }
+
+        return list;
     }
 
     public int getStatus() {

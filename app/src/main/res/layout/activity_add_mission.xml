@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.administrator.employeenote.activity.AddMissionActivity">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorwhite">
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:padding="12dp"
+            android:src="@drawable/btn_backarrow" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="新的任务"
+            android:textColor="#7b7b7b"
+            android:textSize="20dp" />
+        <TextView
+            android:id="@+id/submit"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:padding="12dp"
+            android:gravity="center"
+            android:text="提交"
+            android:textColor="#56abe4"
+            android:textSize="12dp" />
+    </RelativeLayout>
+    <Button
+        android:id="@+id/startvoice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="#56abe4"
+        android:text="开始录音" />
+    <Button
+        android:id="@+id/playvoice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="#56abe4"
+        android:text="播放录音" />
+
+    <Button
+        android:id="@+id/startmission"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="#56abe4"
+        android:text="开始任务" />
+
+</LinearLayout>

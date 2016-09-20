@@ -24,8 +24,8 @@ import android.widget.Scroller;
 
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.adapter.WheelAdapter;
-import com.example.administrator.employeenote.utils.OnWheelChangedListener;
-import com.example.administrator.employeenote.utils.OnWheelScrollListener;
+import com.example.administrator.employeenote.intface.OnWheelChangedListener;
+import com.example.administrator.employeenote.intface.OnWheelScrollListener;
 
 import java.util.LinkedList;
 import java.util.List;

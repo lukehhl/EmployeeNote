@@ -26,11 +26,10 @@ public class HomePageActivity extends AppCompatActivity {
     private SimpleAdapter sim_adapter;
     // 图片封装为一个数组
     private int[] icon = {R.mipmap.ic_launcher, R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher};
-    private String[] iconName = {"我的上级", "我的下属", "我的行程"};
+            R.mipmap.ic_launcher, R.mipmap.ic_launcher};
+    private String[] iconName = {"我的上级", "我的下属", "我的行程", "设置"};
     private TrackApplication tapp;
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
@@ -45,8 +44,6 @@ public class HomePageActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        File appCacheDir = HomePageActivity.this.getCacheDir();
-                        Toast.makeText(HomePageActivity.this, appCacheDir.getAbsolutePath(), Toast.LENGTH_SHORT).show();
                         goToAttract("up", EmployeeListActivity.class);
                         break;
                     case 1:
@@ -68,6 +65,9 @@ public class HomePageActivity extends AppCompatActivity {
                             }
                         });
                         builder.show();
+                        break;
+                    case 3:
+                        goToAttract("setup", SetUpActivity.class);
                         break;
                 }
             }

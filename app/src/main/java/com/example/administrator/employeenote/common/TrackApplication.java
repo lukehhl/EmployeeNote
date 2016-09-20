@@ -18,13 +18,7 @@ public class TrackApplication extends Application {
     private static long serviceId = 122424;
     private String eid;
 
-    public String getEid() {
-        return eid;
-    }
 
-    public void setEid(String eid) {
-        this.eid = eid;
-    }
 
     @Override
     public void onCreate() {
@@ -33,6 +27,14 @@ public class TrackApplication extends Application {
         context = getApplicationContext();
         exit = false;
         eid = null;
+    }
+
+    public String getEid() {
+        return eid;
+    }
+
+    public void setEid(String eid) {
+        this.eid = eid;
     }
 
     public static Context getContext() {

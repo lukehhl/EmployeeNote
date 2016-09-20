@@ -97,7 +97,7 @@ public class MainActivity extends Activity {
         mbdmap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent it = new Intent(MainActivity.this,LoginActivity.class);
+                Intent it = new Intent(MainActivity.this,DrawTraceActivity.class);
                 startActivity(it);
             }
         });

@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.adapter.NumericWheelAdapter;
+import com.example.administrator.employeenote.intface.OnWheelChangedListener;
 import com.example.administrator.employeenote.widget.WheelView;
 
 import java.util.Arrays;
