@@ -1,6 +1,7 @@
 package com.example.administrator.employeenote.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,7 +26,6 @@ import com.baidu.trace.OnTrackListener;
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.common.TrackApplication;
 import com.example.administrator.employeenote.entity.getHistory.HistoryTrackData;
-import com.example.administrator.employeenote.utils.DateUtils;
 import com.example.administrator.employeenote.utils.GsonService;
 
 import org.json.JSONException;
@@ -33,6 +33,7 @@ import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -40,9 +41,9 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
 
     BaiduMap mBaiduMap = null;
     MapView mMapView = null;
-    private Button btnDate = null;
+    private Button btnReplay = null;
+    private Button btnPlay = null;
     private Button btnPause = null;
-    private Button btnDistance = null;
 
     private int startTime = 0;
     private int endTime = 0;
@@ -79,6 +80,10 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
 
         mMapView.showZoomControls(false);
         mHandler = new Handler(Looper.getMainLooper());
+
+        Intent it = getIntent();
+        startTime = it.getIntExtra("starttime", 0);
+        endTime = it.getIntExtra("endtime", 0);
         initView();
 //         初始化OnTrackListener
         initOnTrackListener();
@@ -90,19 +95,24 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
     private void initView() {
 
         tapp = (TrackApplication) getApplication();
-        btnDate = (Button) findViewById(R.id.btn_date);
-        btnDistance = (Button) findViewById(R.id.btn_distance);
+        btnReplay = (Button) findViewById(R.id.btn_replay);
         btnPause = (Button) findViewById(R.id.btn_pause);
-        btnPause.setVisibility(View.INVISIBLE);
+        btnPlay = (Button) findViewById(R.id.btn_play);
 
 
-        btnDate.setOnClickListener(this);
-        btnDistance.setOnClickListener(this);
+        btnReplay.setOnClickListener(this);
         btnPause.setOnClickListener(this);
+        btnPlay.setOnClickListener(this);
 
         tvDatetime = (TextView) findViewById(R.id.tv_datetime);
-        tvDatetime.setText(" 当前日期 : " + DateUtils.getCurrentDate() + " ");
+        tvDatetime.setText(" 任务时间 : \n" + Unix2Date(String.valueOf(startTime), "yyyy-MM-dd HH:mm") + " — "
+                + Unix2Date(String.valueOf(endTime), "yyyy-MM-dd HH:mm"));
+    }
 
+    public String Unix2Date(String timestampString, String formats) {
+        Long timestamp = Long.parseLong(timestampString) * 1000;
+        String date = new java.text.SimpleDateFormat(formats).format(new java.util.Date(timestamp));
+        return date;
     }
 
     /**
@@ -116,16 +126,7 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
         int simpleReturn = 0;
         // 是否返回纠偏后轨迹（0 : 否，1 : 是）
         int isProcessed = processed;
-        // 开始时间
-        if (startTime == 0) {
-//            startTime = (int) (System.currentTimeMillis() / 1000 - 12 * 60 * 60);
-            startTime = 1471826400;
 
-        }
-        if (endTime == 0) {
-//            endTime = (int) (System.currentTimeMillis() / 1000);
-            endTime = 1471826520;
-        }
         // 分页大小
         int pageSize = 1000;
         // 分页索引
@@ -139,47 +140,11 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
                 trackListener);
     }
 
-    // 查询里程
-    private void queryDistance(int processed, String processOption) {
-
-        // entity标识
-        String entityName = MainActivity.entityName;
-
-        // 是否返回纠偏后轨迹（0 : 否，1 : 是）
-        int isProcessed = processed;
-
-        // 里程补充
-        String supplementMode = "driving";
-
-//        // 开始时间
-//        if (startTime == 0) {
-//            startTime = (int) (System.currentTimeMillis() / 1000 - 12 * 60 * 60);
-//        }
-//        // 结束时间
-//        if (endTime == 0) {
-//            endTime = (int) (System.currentTimeMillis() / 1000);
-//        }
-
-        // 开始时间
-        if (startTime == 0) {
-//            startTime = (int) (System.currentTimeMillis() / 1000 - 12 * 60 * 60);
-            startTime = 1471851180;
-
-        }
-        if (endTime == 0) {
-//            endTime = (int) (System.currentTimeMillis() / 1000);
-            endTime = 1471851360;
-        }
-
-        MainActivity.client.queryDistance(MainActivity.serviceId, entityName, isProcessed, processOption,
-                supplementMode, startTime, endTime, trackListener);
-    }
-
     /**
      * 轨迹查询(先选择日期，再根据是否纠偏，发送请求)
      */
     private void queryTrack() {
-                queryHistoryTrack(1, "need_denoise=1,need_vacuate=1,need_mapmatch=1");
+        queryHistoryTrack(1, "need_denoise=1,need_vacuate=1,need_mapmatch=1");
     }
 
     /**
@@ -196,12 +161,10 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
         List<LatLng> latLngList = new ArrayList<LatLng>();
         if (historyTrackData != null && historyTrackData.getStatus() == 0) {
             if (historyTrackData.getListPoints() != null) {
-                latLngList.addAll(historyTrackData.getTimePoints(startTime,endTime));
+                latLngList.addAll(historyTrackData.getListPoints());
             }
-            // 绘制历史轨迹
-//            drawHistoryTrack(latLngList, historyTrackData.distance);
             mBaiduMap.clear();
-
+            Collections.reverse(latLngList);
             initRoadData(latLngList);
             tapp.setExit(true);
             moveLooper();
@@ -213,15 +176,13 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
     public void onClick(View v) {
         // TODO Auto-generated method stub
         switch (v.getId()) {
-            case R.id.btn_date:
+            case R.id.btn_play:
                 // 查询轨迹
                 queryTrack();
+                btnReplay.setEnabled(true);
                 break;
 
             case R.id.btn_pause:
-//                if (tapp.getExit().equals(false))
-//                    tapp.setExit(true);
-//                else tapp.setExit(false);
                 if (suspended) {
                     suspended = false;
                     synchronized (thread) {
@@ -230,8 +191,11 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
                 } else suspended = true;
                 break;
 
-            case R.id.btn_distance:
-                queryDistance(0, null);
+            case R.id.btn_replay:
+                tapp.setExit(true);
+                moveLooper();
+                btnPlay.setEnabled(false);
+                btnPause.setEnabled(true);
                 break;
 
             default:
@@ -318,18 +282,6 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
     }
 
     /**
-     * 算取斜率
-     */
-    private double getSlope(int startIndex) {
-        if ((startIndex + 1) >= mVirtureRoad.getPoints().size()) {
-            throw new RuntimeException("index out of bonds");
-        }
-        LatLng startPoint = mVirtureRoad.getPoints().get(startIndex);
-        LatLng endPoint = mVirtureRoad.getPoints().get(startIndex + 1);
-        return getSlope(startPoint, endPoint);
-    }
-
-    /**
      * 算斜率
      */
     private double getSlope(LatLng fromPoint, LatLng toPoint) {
@@ -339,6 +291,125 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
         double slope = ((toPoint.latitude - fromPoint.latitude) / (toPoint.longitude - fromPoint.longitude));
         return slope;
 
+    }
+
+    /**
+     * 计算x方向每次移动的距离
+     */
+    private double getXMoveDistance(double slope) {
+        if (slope == Double.MAX_VALUE) {
+            return DISTANCE;
+        }
+        return Math.abs((DISTANCE * slope) / Math.sqrt(1 + slope * slope));
+    }
+
+    /**
+     * 循环进行移动逻辑
+     */
+    public void moveLooper() {
+        tapp.setExit(false);
+
+        thread = new Thread() {
+
+            public void run() {
+
+                for (int i = 0; !tapp.getExit() && i < mVirtureRoad.getPoints().size() - 1; i++) {
+                    final LatLng startPoint = mVirtureRoad.getPoints().get(i);
+                    final LatLng endPoint = mVirtureRoad.getPoints().get(i + 1);
+                    MapStatus mMapStatus = new MapStatus.Builder()
+                            .target(centrepoint(startPoint, endPoint))
+                            .zoom(16)
+                            .build();
+                    final MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+
+
+                    mMoveMarker.setPosition(startPoint);
+
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            // refresh marker's rotate
+                            if (tapp.getExit() || mMapView == null) {
+                                return;
+                            }
+//                                mMoveMarker.setRotate((float) getAngle(startPoint,
+//                                        endPoint));
+
+                            mBaiduMap.setMapStatus(mMapStatusUpdate);
+                        }
+                    });
+                    double slope = getSlope(startPoint, endPoint);
+
+                    //是不是正向的标示（向上设为正向）
+                    boolean isReverse = (startPoint.latitude > endPoint.latitude);
+
+                    double intercept = getInterception(slope, startPoint);
+
+                    double xMoveDistance = isReverse ? getXMoveDistance(slope)
+                            : -1 * getXMoveDistance(slope);
+
+
+                    for (double j = startPoint.latitude; !((j > endPoint.latitude) ^ isReverse); j = j - xMoveDistance) {
+                        LatLng latLng;
+                        if (slope != Double.MAX_VALUE) {
+                            latLng = new LatLng(j, (j - intercept) / slope);
+                        } else {
+                            latLng = new LatLng(j, startPoint.longitude);
+                        }
+                        final LatLng finalLatLng = latLng;
+
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (mMapView == null) {
+                                    return;
+                                }
+                                // refresh marker's position
+//                                else if (!tapp.getExit())
+                                mMoveMarker.setPosition(finalLatLng);
+                            }
+                        });
+
+                        try {
+                            Thread.sleep(TIME_INTERVAL);
+                            synchronized (thread) {
+                                if (suspended) {
+                                    mHandler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            btnPlay.setEnabled(false);
+                                            btnPause.setEnabled(true);
+                                        }
+                                    });
+                                    thread.wait();
+                                } else {
+                                    mHandler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            btnPlay.setEnabled(true);
+                                            btnPause.setEnabled(false);
+                                        }
+                                    });
+                                }
+
+                            }
+
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                }
+            }
+
+        };
+
+        thread.start();
+    }
+
+    public LatLng centrepoint(LatLng s, LatLng e) {
+        LatLng c = new LatLng((s.latitude + e.latitude) / 2, (s.longitude + e.longitude) / 2);
+        return c;
     }
 
 
@@ -383,134 +454,6 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
         tapp.setExit(true);
         mMapView.onDestroy();
         mBaiduMap.clear();
-    }
-
-    /**
-     * 计算x方向每次移动的距离
-     */
-    private double getXMoveDistance(double slope) {
-        if (slope == Double.MAX_VALUE) {
-            return DISTANCE;
-        }
-        return Math.abs((DISTANCE * slope) / Math.sqrt(1 + slope * slope));
-    }
-
-    /**
-     * 循环进行移动逻辑
-     */
-    public void moveLooper() {
-        tapp.setExit(false);
-
-        thread = new Thread() {
-
-            public void run() {
-
-                for (int i = 0; !tapp.getExit() && i < mVirtureRoad.getPoints().size() - 1; i++) {
-//                    Log.i("movethread", "bbbbbbbbbbbbbbbbbbbbb");
-                    final LatLng startPoint = mVirtureRoad.getPoints().get(i);
-                    final LatLng endPoint = mVirtureRoad.getPoints().get(i + 1);
-                    MapStatus mMapStatus = new MapStatus.Builder()
-                            .target(centrepoint(startPoint, endPoint))
-                            .zoom(16)
-                            .build();
-                    final MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
-
-
-                    mMoveMarker.setPosition(startPoint);
-
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            // refresh marker's rotate
-                            if (tapp.getExit() || mMapView == null) {
-                                return;
-                            }
-//                                mMoveMarker.setRotate((float) getAngle(startPoint,
-//                                        endPoint));
-
-                            mBaiduMap.setMapStatus(mMapStatusUpdate);
-                        }
-                    });
-                    double slope = getSlope(startPoint, endPoint);
-
-                    //是不是正向的标示（向上设为正向）
-                    boolean isReverse = (startPoint.latitude > endPoint.latitude);
-
-                    double intercept = getInterception(slope, startPoint);
-
-                    double xMoveDistance = isReverse ? getXMoveDistance(slope)
-                            : -1 * getXMoveDistance(slope);
-
-
-                    for (double j = startPoint.latitude;
-                         !((j > endPoint.latitude) ^ isReverse);
-                         j = j
-                                 - xMoveDistance) {
-                        LatLng latLng = null;
-                        if (slope != Double.MAX_VALUE) {
-                            latLng = new LatLng(j, (j - intercept) / slope);
-                        } else {
-                            latLng = new LatLng(j, startPoint.longitude);
-                        }
-                        final LatLng finalLatLng = latLng;
-
-                        mHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (mMapView == null) {
-                                    return;
-                                }
-                                // refresh marker's position
-//                                else if (!tapp.getExit())
-                                mMoveMarker.setPosition(finalLatLng);
-                            }
-                        });
-
-                        try {
-                            Thread.sleep(TIME_INTERVAL);
-                            synchronized (thread) {
-                                if (suspended) {
-                                    mHandler.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            btnPause.setText("播放");
-                                        }
-                                    });
-                                    thread.wait();
-                                } else {
-                                    mHandler.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            btnPause.setVisibility(View.VISIBLE);
-                                            btnPause.setText("暂停");
-                                        }
-                                    });
-                                }
-
-                            }
-
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                }
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        btnPause.setText("播放");
-                    }
-                });
-            }
-
-        };
-
-        thread.start();
-    }
-
-    public LatLng centrepoint(LatLng s, LatLng e) {
-        LatLng c = new LatLng((s.latitude + e.latitude) / 2, (s.longitude + e.longitude) / 2);
-        return c;
     }
 
 }

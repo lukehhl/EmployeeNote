@@ -64,17 +64,17 @@ public class EmployeeAdapter extends BaseAdapter{
 
     @Override
     public int getCount() {
-        return 0;
+        return data.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return data.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
 

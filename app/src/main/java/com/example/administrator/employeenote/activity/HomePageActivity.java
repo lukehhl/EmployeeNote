@@ -44,10 +44,10 @@ public class HomePageActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        goToAttract("up", EmployeeListActivity.class);
+                        goToAttract("getLeader", EmployeeListActivity.class);
                         break;
                     case 1:
-                        goToAttract("down", EmployeeListActivity.class);
+                        goToAttract("getEmployee", EmployeeListActivity.class);
                         break;
                     case 2:
                         AlertDialog.Builder builder = new AlertDialog.Builder(HomePageActivity.this);
@@ -78,7 +78,6 @@ public class HomePageActivity extends AppCompatActivity {
     //跳转
     public void goToAttract(String type, Class<?> cls) {
         Intent intent = new Intent(this, cls);
-        intent.putExtra("eid", tapp.getEid());
         intent.putExtra("type", type);
         startActivity(intent);
 

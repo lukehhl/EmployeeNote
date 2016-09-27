@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="5dip"
+        android:layout_marginTop="5dp"
         android:textColor="#0000D8" />
 
     <LinearLayout
@@ -19,26 +19,29 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btn_date"
+            android:id="@+id/btn_play"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="选择时间"
-            android:textColor="#000000" />
-
-        <Button
-            android:id="@+id/btn_distance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="总距离"
-            android:textColor="#000000" />
+            android:text="播放"
+            android:textColor="#000000"
+            />
 
         <Button
             android:id="@+id/btn_pause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="播放"
+            android:text="暂停"
+            android:enabled="false"
+            android:textColor="#000000" />
+
+        <Button
+            android:id="@+id/btn_replay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="重新播放"
             android:textColor="#000000"
-            android:visibility="invisible" />
+            android:enabled="false"
+            />
 
 
     </LinearLayout>

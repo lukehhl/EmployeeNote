@@ -26,7 +26,7 @@ public class TrackApplication extends Application {
         SDKInitializer.initialize(getApplicationContext());
         context = getApplicationContext();
         exit = false;
-        eid = null;
+        eid = "3";
     }
 
     public String getEid() {

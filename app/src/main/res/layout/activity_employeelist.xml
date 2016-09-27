@@ -38,11 +38,11 @@
     </RelativeLayout>
 
 
+
     <ListView
         android:id="@+id/eList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollbars="vertical"
         android:paddingLeft="8dp"
         android:layout_marginTop="10dp"
 
