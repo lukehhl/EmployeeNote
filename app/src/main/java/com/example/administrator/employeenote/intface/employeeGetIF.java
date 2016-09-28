@@ -1,6 +1,6 @@
 package com.example.administrator.employeenote.intface;
 
-import com.example.administrator.employeenote.entity.Employee.EmployeeData;
+import com.example.administrator.employeenote.entity.EmployeeData;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

@@ -5,21 +5,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.baidu.mapapi.map.MyLocationData;
 import com.example.administrator.employeenote.R;
-import com.example.administrator.employeenote.entity.Employee.EmployeeData;
+import com.example.administrator.employeenote.entity.EmployeeData;
+import com.example.administrator.employeenote.entity.VoiceData;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 /**
  * Created by GE11522 on 2016-9-5.
  */
 public class EmployeeAdapter extends BaseAdapter{
-
     public List<EmployeeData> data;
     private LayoutInflater mInflater;
     private Context context;
@@ -35,9 +32,9 @@ public class EmployeeAdapter extends BaseAdapter{
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHold hold = null;
+        EmployeeAdapter.ViewHold hold = null;
         if (convertView == null) {
-            hold = new ViewHold();
+            hold = new EmployeeAdapter.ViewHold();
             convertView = mInflater.inflate(R.layout.list_employee, null);
             //hold.image = (ImageView) convertView.findViewById(R.id.hkavatar);
             hold.nameView = (TextView) convertView.findViewById(R.id.ename);
@@ -46,7 +43,7 @@ public class EmployeeAdapter extends BaseAdapter{
             hold.localView = (TextView) convertView.findViewById(R.id.elocal);
             convertView.setTag(hold);
         } else {
-            hold = (ViewHold) convertView.getTag();
+            hold = (EmployeeAdapter.ViewHold) convertView.getTag();
         }
         //hold.image.setImageResource(R.drawable.ic_launcher);
         hold.nameView.setText(data.get(position).getEname());

@@ -8,6 +8,7 @@ import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,6 +29,21 @@ import com.example.administrator.employeenote.common.TrackApplication;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Multipart;
+import retrofit2.http.POST;
+import retrofit2.http.Part;
+import retrofit2.http.Query;
 
 public class AddMissionActivity extends AppCompatActivity {
     private ImageView back;
@@ -38,8 +54,11 @@ public class AddMissionActivity extends AppCompatActivity {
     private MediaRecorder mRecorder;
     private MediaPlayer mPlayer;
     private String mFileName = null;
+    private String date;
 
     private Handler mhandler;
+    private Boolean retroSign = false;
+    private Boolean mapSign = false;
 
     private final String LOG_TAG = "AddMissionActivity";
 
@@ -147,7 +166,7 @@ public class AddMissionActivity extends AppCompatActivity {
                         .setPositiveButton("开始", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                startMap();
+                                startMission();
                             }
                         })
                         .setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -158,6 +177,13 @@ public class AddMissionActivity extends AppCompatActivity {
                         })
                         .setCancelable(false)
                         .show();
+            }
+        });
+
+        smisson.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopMap();
             }
         });
 
@@ -197,9 +223,11 @@ public class AddMissionActivity extends AppCompatActivity {
 
     private void startVoice() {//开始录音
 
-        SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd_hh:mm:ss");
-        String date = sDateFormat.format(new java.util.Date());
-        mFileName = AddMissionActivity.this.getCacheDir().toString() + "/" + tapp.getEid() + "_" + date + ".amr";
+        SimpleDateFormat sDateFormat1 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat sDateFormat2 = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
+        date = sDateFormat1.format(new java.util.Date());
+        String filename = sDateFormat2.format(new Date());
+        mFileName = AddMissionActivity.this.getCacheDir().toString() + "/" + tapp.getEid() + "-" + filename + ".amr";
 
         File directory = new File(mFileName).getParentFile();
         if (!directory.exists() && !directory.mkdirs()) {
@@ -231,9 +259,8 @@ public class AddMissionActivity extends AppCompatActivity {
                         .setMessage(arg0 + "    " + arg1)
                         .setPositiveButton("确定", null)
                         .show();
-                if (arg0 == 0){
-                    Intent it = new Intent(AddMissionActivity.this,MissionActivity.class);
-                    startActivity(it);
+                if (arg0 == 0) {
+                    mapSign = true;
                 }
             }
 
@@ -272,4 +299,88 @@ public class AddMissionActivity extends AppCompatActivity {
         };
         client.stopTrace(trace, onStopTraceListener);
     }
+
+    public interface FileUploadService { //retrofit上传文件接口
+        @Multipart
+        @POST("addMission.do")
+        Call<ResponseBody> upload(@Part("eid") String eid,
+                                  @Part("vtime") String date,
+                                  @Part("vsrc") RequestBody description,
+                                  @Part MultipartBody.Part file);
+    }
+
+    public void initRetrofit() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://60.205.178.163:8080/gesac/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        //先创建 service
+        FileUploadService service = retrofit.create(FileUploadService.class);
+        //构建要上传的文件
+        File file = new File(mFileName);
+        RequestBody requestFile =
+                RequestBody.create(MediaType.parse("application/otcet-stream"), file);
+        MultipartBody.Part body =
+                MultipartBody.Part.createFormData("voiceFile", file.getName(), requestFile);
+        String descriptionString = file.getName();
+        RequestBody description = RequestBody.create(
+                MediaType.parse("multipart/form-data"), descriptionString);
+        Call<ResponseBody> call = service.upload(tapp.getEid(), date, description, body);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call,
+                                   Response<ResponseBody> response) {
+                if (response.isSuccessful()) { //上传成功
+                    Toast.makeText(AddMissionActivity.this, "success", Toast.LENGTH_SHORT).show();
+                    retroSign = true;
+                } else
+                    try {
+                        Log.d("retrofit",response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
+    public void startMission() {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                initRetrofit();
+                startMap();
+                while (true) {
+                    //TODO 加载动画
+                    if (retroSign && mapSign) {
+                        mhandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                new AlertDialog.Builder(AddMissionActivity.this)
+                                        .setMessage("提交成功")
+                                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                Intent it = new Intent(AddMissionActivity.this, MissionActivity.class);
+                                                startActivity(it);
+                                                finish();
+                                            }
+                                        })
+                                        .show();
+                            }
+                        });
+                        break;
+                    }
+                }
+
+            }
+        }.start();
+    }
+
+
 }

@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.administrator.employeenote.R;
-import com.example.administrator.employeenote.entity.Employee.EmployeeData;
+import com.example.administrator.employeenote.entity.EmployeeData;
 
 import java.util.List;
 

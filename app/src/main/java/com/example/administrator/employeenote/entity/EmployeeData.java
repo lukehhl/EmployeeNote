@@ -1,4 +1,4 @@
-package com.example.administrator.employeenote.entity.Employee;
+package com.example.administrator.employeenote.entity;
 
 /**
  * Created by GE11522 on 2016-9-5.

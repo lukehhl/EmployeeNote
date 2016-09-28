@@ -10,17 +10,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.adapter.EmployeeAdapter;
 import com.example.administrator.employeenote.common.TrackApplication;
-import com.example.administrator.employeenote.entity.Employee.EmployeeData;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.example.administrator.employeenote.entity.EmployeeData;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
