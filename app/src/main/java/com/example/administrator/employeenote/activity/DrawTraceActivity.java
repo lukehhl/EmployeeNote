@@ -22,7 +22,9 @@ import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.trace.LBSTraceClient;
 import com.baidu.trace.OnTrackListener;
+import com.baidu.trace.Trace;
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.common.TrackApplication;
 import com.example.administrator.employeenote.entity.getHistory.HistoryTrackData;
@@ -69,6 +71,32 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
     private static final int TIME_INTERVAL = 130;
     private static final double DISTANCE = 0.0001;
 
+    /**
+     * 轨迹服务
+     */
+    protected static Trace trace = null;
+
+    /**
+     * entity标识
+     */
+    protected static String entityName = "mycar";
+
+    /**
+     * 鹰眼服务ID，开发者创建的鹰眼服务对应的服务ID
+     */
+    protected static long serviceId = 122424;
+
+    /**
+     * 轨迹服务类型（0 : 不建立socket长连接， 1 : 建立socket长连接但不上传位置数据，2 : 建立socket长连接并上传位置数据）
+     */
+    private int traceType = 2;
+
+    /**
+     * 轨迹服务客户端
+     */
+    protected static LBSTraceClient client = null;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,8 +110,8 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
         mHandler = new Handler(Looper.getMainLooper());
 
         Intent it = getIntent();
-        startTime = it.getIntExtra("starttime", 0);
-        endTime = it.getIntExtra("endtime", 0);
+        startTime = Integer.parseInt(it.getStringExtra("startTime").substring(0,10));
+        endTime = Integer.parseInt(it.getStringExtra("endTime").substring(0,10));
         initView();
 //         初始化OnTrackListener
         initOnTrackListener();
@@ -95,6 +123,8 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
     private void initView() {
 
         tapp = (TrackApplication) getApplication();
+        initTrace();
+
         btnReplay = (Button) findViewById(R.id.btn_replay);
         btnPause = (Button) findViewById(R.id.btn_pause);
         btnPlay = (Button) findViewById(R.id.btn_play);
@@ -105,8 +135,23 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
         btnPlay.setOnClickListener(this);
 
         tvDatetime = (TextView) findViewById(R.id.tv_datetime);
-        tvDatetime.setText(" 任务时间 : \n" + Unix2Date(String.valueOf(startTime), "yyyy-MM-dd HH:mm") + " — "
+//        tvDatetime.setText(" 任务时间 : \n" + String.valueOf(startTime) + " — "
+//                + String.valueOf(endTime));
+        tvDatetime.setText(" 任务时间 : \n" + Unix2Date(String.valueOf(startTime), "yyyy-MM-dd HH:mm") + " 至 "
                 + Unix2Date(String.valueOf(endTime), "yyyy-MM-dd HH:mm"));
+    }
+
+    private void initTrace(){
+        //实例化轨迹服务客户端
+        client = new LBSTraceClient(getApplicationContext());
+        //实例化轨迹服务
+        trace = new Trace(getApplicationContext(), serviceId, entityName, traceType);
+        //位置采集周期
+        int gatherInterval = 5;
+        //打包周期
+        int packInterval = 60;
+        //设置位置采集和打包周期
+        client.setInterval(gatherInterval, packInterval);
     }
 
     public String Unix2Date(String timestampString, String formats) {
@@ -132,7 +177,7 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
         // 分页索引
         int pageIndex = 1;
 
-        MainActivity.client.queryHistoryTrack(MainActivity.serviceId, entityName, simpleReturn,
+        client.queryHistoryTrack(serviceId, entityName, simpleReturn,
                 isProcessed, processOption,
                 startTime, endTime,
                 pageSize,

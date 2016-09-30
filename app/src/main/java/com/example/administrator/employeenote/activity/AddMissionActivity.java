@@ -167,6 +167,7 @@ public class AddMissionActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 startMission();
+                                dialog.cancel();
                             }
                         })
                         .setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -223,8 +224,8 @@ public class AddMissionActivity extends AppCompatActivity {
 
     private void startVoice() {//开始录音
 
-        SimpleDateFormat sDateFormat1 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        SimpleDateFormat sDateFormat2 = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
+        SimpleDateFormat sDateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sDateFormat2 = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
         date = sDateFormat1.format(new java.util.Date());
         String filename = sDateFormat2.format(new Date());
         mFileName = AddMissionActivity.this.getCacheDir().toString() + "/" + tapp.getEid() + "-" + filename + ".amr";
@@ -255,10 +256,7 @@ public class AddMissionActivity extends AppCompatActivity {
             //开启轨迹服务回调接口（arg0 : 消息编码，arg1 : 消息内容，详情查看类参考）
             @Override
             public void onTraceCallback(int arg0, String arg1) {
-                new AlertDialog.Builder(AddMissionActivity.this)
-                        .setMessage(arg0 + "    " + arg1)
-                        .setPositiveButton("确定", null)
-                        .show();
+                Toast.makeText(AddMissionActivity.this, arg0 + "    " + arg1, Toast.LENGTH_SHORT).show();
                 if (arg0 == 0) {
                     mapSign = true;
                 }
@@ -304,14 +302,15 @@ public class AddMissionActivity extends AppCompatActivity {
         @Multipart
         @POST("addMission.do")
         Call<ResponseBody> upload(@Part("eid") String eid,
-                                  @Part("vtime") String date,
+                                  @Part("vtime") String vtime,
                                   @Part("vsrc") RequestBody description,
-                                  @Part MultipartBody.Part file);
+                                  @Part MultipartBody.Part file,
+                                  @Part("vsign") String vsign);
     }
 
     public void initRetrofit() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://60.205.178.163:8080/gesac/")
+                .baseUrl(tapp.serverUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         //先创建 service
@@ -325,7 +324,7 @@ public class AddMissionActivity extends AppCompatActivity {
         String descriptionString = file.getName();
         RequestBody description = RequestBody.create(
                 MediaType.parse("multipart/form-data"), descriptionString);
-        Call<ResponseBody> call = service.upload(tapp.getEid(), date, description, body);
+        Call<ResponseBody> call = service.upload(tapp.getEid(), date, description, body, "0");
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call,

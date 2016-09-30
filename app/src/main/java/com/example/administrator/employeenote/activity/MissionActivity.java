@@ -6,13 +6,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.adapter.MissionAdapter;
 import com.example.administrator.employeenote.common.TrackApplication;
 import com.example.administrator.employeenote.entity.VoiceData;
+import com.example.administrator.employeenote.intface.OnDataChangeListener;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,13 +28,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-public class MissionActivity extends AppCompatActivity {
+public class MissionActivity extends AppCompatActivity{
     private static final String TAG = "retrofit";
-    private ImageView back,refresh;
+    private ImageView back, refresh;
     private ListView mlist;
 
+
     private TrackApplication tapp;
-    private Handler handler;
+    public static Handler handler;
+    private MissionAdapter adapter;
 
     private List<VoiceData> vlist;
     private Boolean retrofitSign = false;
@@ -67,19 +72,23 @@ public class MissionActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //TODO 刷新任务
+                vlist.clear();
                 getMission();
             }
         });
+
     }
 
-    public interface missionGetIF{
+
+
+    public interface missionGetIF {
         @GET("getMission.do")
         Call<List<VoiceData>> getMission(@Query("eid") String id);
     }
 
-    public void initMission(){
+    public void initMission() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://60.205.178.163:8080/gesac/")
+                .baseUrl(tapp.serverUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         missionGetIF missionGetIF = retrofit.create(missionGetIF.class);
@@ -101,6 +110,7 @@ public class MissionActivity extends AppCompatActivity {
                 }
 
             }
+
             @Override
             public void onFailure(Call<List<VoiceData>> call, Throwable t) {
                 Log.d(TAG, t.toString());
@@ -108,19 +118,21 @@ public class MissionActivity extends AppCompatActivity {
         });
     }
 
-    public void getMission(){
-        new Thread(){
+    public void getMission() {
+        new Thread() {
             @Override
             public void run() {
                 super.run();
+                retrofitSign = false;
                 initMission();
-                while(true){
-                    if (retrofitSign){
+                while (true) {
+                    if (retrofitSign) {
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                MissionAdapter adapter = new MissionAdapter(MissionActivity.this, vlist);
+                                adapter = new MissionAdapter(MissionActivity.this, vlist);
                                 mlist.setAdapter(adapter);
+                                Toast.makeText(getApplicationContext(), "getlist success", Toast.LENGTH_SHORT).show();
                             }
                         });
                         break;
@@ -129,6 +141,10 @@ public class MissionActivity extends AppCompatActivity {
             }
         }.start();
     }
+
+//    public static void freshList(){
+//        adapter.notifyDataSetChanged();
+//    }
 
 
 }

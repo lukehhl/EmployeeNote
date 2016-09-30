@@ -13,6 +13,7 @@ import com.baidu.trace.Trace;
  */
 public class TrackApplication extends Application {
     private static Context context;
+    public static final String serverUrl = "http://10.30.36.97:8080/gesac/";
     private static Boolean exit;
     private static Trace trace = null;
     private static long serviceId = 122424;
@@ -26,7 +27,7 @@ public class TrackApplication extends Application {
         SDKInitializer.initialize(getApplicationContext());
         context = getApplicationContext();
         exit = false;
-        eid = "3";
+        eid = "8";
     }
 
     public String getEid() {

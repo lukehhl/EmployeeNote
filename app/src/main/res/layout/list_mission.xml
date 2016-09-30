@@ -33,14 +33,6 @@
             android:text="zhuantai"
             />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/state"
-            android:layout_marginTop="50dp"
-            android:text="状态:  "
-            />
-
         <Button
             android:id="@+id/btn_play"
             android:layout_width="wrap_content"
@@ -53,7 +45,14 @@
             android:layout_height="40dp"
             android:layout_marginTop="40dp"
             android:layout_toRightOf="@id/btn_play"
-            android:text="删除任务" />
+            android:text="取消任务" />
+        <Button
+            android:id="@+id/btn_finish"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginTop="40dp"
+            android:layout_toRightOf="@id/btn_delete"
+            android:text="完成任务" />
 
         <Button
             android:id="@+id/btn_review"

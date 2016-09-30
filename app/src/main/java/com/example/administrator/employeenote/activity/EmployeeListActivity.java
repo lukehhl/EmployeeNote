@@ -94,7 +94,7 @@ public class EmployeeListActivity extends AppCompatActivity {
 
     public List<EmployeeData> initRetrofit() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://60.205.178.163:8080/gesac/")
+                .baseUrl(tapp.serverUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         employeeGetIF employeeGetIF = retrofit.create(employeeGetIF.class);
