@@ -99,7 +99,7 @@ public class MissionAdapter extends BaseAdapter {
             hold.delView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    delMission(String.valueOf(data.get(position).getVid()));
+                    delMission(String.valueOf(data.get(position).getVid()),position);
 
                 }
             });
@@ -107,12 +107,13 @@ public class MissionAdapter extends BaseAdapter {
             hold.finishView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    finMission(String.valueOf(data.get(position).getVid()));
+                    finMission(String.valueOf(data.get(position).getVid()),position);
                 }
             });
             hold.traceView.setEnabled(false);
             hold.traceView.setVisibility(View.INVISIBLE);
             hold.stateView.setText("进行中");
+            hold.stateView.setTextColor(convertView.getResources().getColor(R.color.red));
         } else if(data.get(position).getVsign() == 1){ //已完成的任务
 
             hold.delView.setEnabled(false);
@@ -140,6 +141,8 @@ public class MissionAdapter extends BaseAdapter {
                 }
             });
             hold.stateView.setText("已完成");
+            hold.stateView.setTextColor(convertView.getResources().getColor(R.color.green));
+
         }
 
         return convertView;
@@ -338,7 +341,7 @@ public class MissionAdapter extends BaseAdapter {
         }.start();
     }
 
-    public void delMission(final String vid) {
+    public void delMission(final String vid, final int position) {
         new Thread() {
             @Override
             public void run() {
@@ -350,7 +353,8 @@ public class MissionAdapter extends BaseAdapter {
                             @Override
                             public void run() {
                                 Toast.makeText(context, "delete success", Toast.LENGTH_SHORT).show();
-//                                MissionActivity.freshList();
+                                data.remove(position);
+                                notifyDataSetChanged();
                             }
 
                         });
@@ -361,7 +365,7 @@ public class MissionAdapter extends BaseAdapter {
         }.start();
     }
 
-    private void finMission(final String vid) {
+    private void finMission(final String vid, final int positon) {
         new Thread(){
             @Override
             public void run() {
@@ -369,7 +373,13 @@ public class MissionAdapter extends BaseAdapter {
                 initFinMission(vid);
                 while(true){
                     if ("true".equalsIgnoreCase(finSign)){
-//                        MissionActivity.freshList();
+                        MissionActivity.handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                data.get(positon).setVsign(1);
+                                notifyDataSetChanged();
+                            }
+                        });
                         break;
                     }
                 }

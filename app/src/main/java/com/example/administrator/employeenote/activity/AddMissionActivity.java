@@ -62,24 +62,6 @@ public class AddMissionActivity extends AppCompatActivity {
 
     private final String LOG_TAG = "AddMissionActivity";
 
-    /**
-     * 轨迹服务
-     */
-    protected static Trace trace = null;
-    /**
-     * entity标识
-     */
-    protected static String entityName = null;
-    /**
-     * 轨迹服务类型（0 : 不建立socket长连接， 1 : 建立socket长连接但不上传位置数据，2 : 建立socket长连接并上传位置数据）
-     */
-    private int traceType = 2;
-
-    /**
-     * 轨迹服务客户端
-     */
-    protected static LBSTraceClient client = null;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,18 +75,7 @@ public class AddMissionActivity extends AppCompatActivity {
         tapp = (TrackApplication) getApplication();
         mhandler = new Handler(Looper.getMainLooper());
 
-        //实例名称
-        entityName = tapp.getEid();
-        //实例化轨迹服务客户端
-        client = new LBSTraceClient(getApplicationContext());
-        //实例化轨迹服务
-        trace = new Trace(getApplicationContext(), tapp.getServiceId(), entityName, traceType);
-        //位置采集周期
-        int gatherInterval = 5;
-        //打包周期
-        int packInterval = 60;
-        //设置位置采集和打包周期
-        client.setInterval(gatherInterval, packInterval);
+
 
         back = (ImageView) findViewById(R.id.back);
         submit = (TextView) findViewById(R.id.submit);
@@ -181,13 +152,6 @@ public class AddMissionActivity extends AppCompatActivity {
             }
         });
 
-        smisson.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                stopMap();
-            }
-        });
-
     }
 
     private void stopVoice() {//停止录音
@@ -249,54 +213,7 @@ public class AddMissionActivity extends AppCompatActivity {
 
     }
 
-    private void startMap() {
 
-        //实例化开启轨迹服务回调接口
-        OnStartTraceListener startTraceListener = new OnStartTraceListener() {
-            //开启轨迹服务回调接口（arg0 : 消息编码，arg1 : 消息内容，详情查看类参考）
-            @Override
-            public void onTraceCallback(int arg0, String arg1) {
-                Toast.makeText(AddMissionActivity.this, arg0 + "    " + arg1, Toast.LENGTH_SHORT).show();
-                if (arg0 == 0) {
-                    mapSign = true;
-                }
-            }
-
-            //轨迹服务推送接口（用于接收服务端推送消息，arg0 : 消息类型，arg1 : 消息内容，详情查看类参考）
-            @Override
-            public void onTracePushCallback(byte arg0, String arg1) {
-            }
-        };
-        //开启轨迹服务
-        client.startTrace(trace, startTraceListener);
-    }
-
-    private void stopMap() {
-//        Toast.makeText(getApplicationContext(),"停止", Toast.LENGTH_LONG).show();
-
-
-        OnStopTraceListener onStopTraceListener = new OnStopTraceListener() {
-            @Override
-            public void onStopTraceSuccess() {
-//                Toast.makeText(getApplicationContext(),"停止成功", Toast.LENGTH_LONG).show();
-                new AlertDialog.Builder(AddMissionActivity.this)
-                        .setMessage("停止成功")
-                        .setPositiveButton("确定", null)
-                        .show();
-            }
-
-            @Override
-            public void onStopTraceFailed(int i, String s) {
-//                Toast.makeText(getApplicationContext(),"停止失败", Toast.LENGTH_LONG).show();
-                new AlertDialog.Builder(AddMissionActivity.this)
-                        .setMessage("停止失败")
-                        .setPositiveButton("确定", null)
-                        .show();
-
-            }
-        };
-        client.stopTrace(trace, onStopTraceListener);
-    }
 
     public interface FileUploadService { //retrofit上传文件接口
         @Multipart
@@ -353,10 +270,9 @@ public class AddMissionActivity extends AppCompatActivity {
             public void run() {
                 super.run();
                 initRetrofit();
-                startMap();
                 while (true) {
                     //TODO 加载动画
-                    if (retroSign && mapSign) {
+                    if (retroSign) {
                         mhandler.post(new Runnable() {
                             @Override
                             public void run() {

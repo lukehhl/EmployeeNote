@@ -11,6 +11,10 @@ import android.widget.GridView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+import com.baidu.trace.LBSTraceClient;
+import com.baidu.trace.OnStartTraceListener;
+import com.baidu.trace.OnStopTraceListener;
+import com.baidu.trace.Trace;
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.common.TrackApplication;
 
@@ -30,6 +34,24 @@ public class HomePageActivity extends AppCompatActivity {
     private String[] iconName = {"我的上级", "我的下属", "我的行程", "设置"};
     private TrackApplication tapp;
 
+    /**
+     * 轨迹服务
+     */
+    public static Trace trace = null;
+    /**
+     * entity标识
+     */
+    public static String entityName = null;
+    /**
+     * 轨迹服务类型（0 : 不建立socket长连接， 1 : 建立socket长连接但不上传位置数据，2 : 建立socket长连接并上传位置数据）
+     */
+    private int traceType = 2;
+
+    /**
+     * 轨迹服务客户端
+     */
+    public static LBSTraceClient client = null;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
@@ -39,6 +61,8 @@ public class HomePageActivity extends AppCompatActivity {
     private void initView() {
         tapp = (TrackApplication) getApplication();
         gview = (GridView) findViewById(R.id.menugrid);
+        startMap();
+
         gview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -108,5 +132,65 @@ public class HomePageActivity extends AppCompatActivity {
         }
 
         return data_list;
+    }
+
+    private void startMap() {
+        //实例名称
+        entityName = tapp.getEid();
+        //实例化轨迹服务客户端
+        client = new LBSTraceClient(getApplicationContext());
+        //实例化轨迹服务
+        trace = new Trace(getApplicationContext(), tapp.getServiceId(), entityName, traceType);
+        //位置采集周期
+        int gatherInterval = 5;
+        //打包周期
+        int packInterval = 60;
+        //设置位置采集和打包周期
+        client.setInterval(gatherInterval, packInterval);
+
+        //实例化开启轨迹服务回调接口
+        OnStartTraceListener startTraceListener = new OnStartTraceListener() {
+            //开启轨迹服务回调接口（arg0 : 消息编码，arg1 : 消息内容，详情查看类参考）
+            @Override
+            public void onTraceCallback(int arg0, String arg1) {
+                Toast.makeText(getApplicationContext(), arg0 + "    " + arg1, Toast.LENGTH_SHORT).show();
+                if (arg0 == 0) {
+                }
+            }
+
+            //轨迹服务推送接口（用于接收服务端推送消息，arg0 : 消息类型，arg1 : 消息内容，详情查看类参考）
+            @Override
+            public void onTracePushCallback(byte arg0, String arg1) {
+            }
+        };
+        //开启轨迹服务
+        client.startTrace(trace, startTraceListener);
+    }
+
+    private void stopMap() {
+//        Toast.makeText(getApplicationContext(),"停止", Toast.LENGTH_LONG).show();
+
+
+        OnStopTraceListener onStopTraceListener = new OnStopTraceListener() {
+            @Override
+            public void onStopTraceSuccess() {
+//                Toast.makeText(getApplicationContext(),"停止成功", Toast.LENGTH_LONG).show();
+                new android.app.AlertDialog.Builder(HomePageActivity.this)
+                        .setMessage("停止成功")
+                        .setPositiveButton("确定", null)
+                        .show();
+            }
+
+            @Override
+            public void onStopTraceFailed(int i, String s) {
+//                Toast.makeText(getApplicationContext(),"停止失败", Toast.LENGTH_LONG).show();
+                new android.app.AlertDialog.Builder(HomePageActivity.this)
+                        .setMessage("停止失败")
+                        .setPositiveButton("确定", null)
+                        .show();
+
+            }
+        };
+        client.stopTrace(trace, onStopTraceListener);
     }
 }

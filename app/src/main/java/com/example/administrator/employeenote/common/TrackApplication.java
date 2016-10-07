@@ -13,9 +13,8 @@ import com.baidu.trace.Trace;
  */
 public class TrackApplication extends Application {
     private static Context context;
-    public static final String serverUrl = "http://10.30.36.97:8080/gesac/";
+    public static final String serverUrl = "http://60.205.178.163:8080/gesac/";
     private static Boolean exit;
-    private static Trace trace = null;
     private static long serviceId = 122424;
     private String eid;
 
@@ -50,13 +49,7 @@ public class TrackApplication extends Application {
         this.exit = exit;
     }
 
-    public static void setTrace(Trace trace) {
-        TrackApplication.trace = trace;
-    }
 
-    public static Trace getTrace() {
-        return trace;
-    }
 
     public static long getServiceId() {
         return serviceId;
