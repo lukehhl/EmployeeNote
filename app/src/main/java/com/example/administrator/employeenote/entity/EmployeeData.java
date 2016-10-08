@@ -14,7 +14,7 @@ public class EmployeeData {
         this.etele = etele;
         this.ephone = ephone;
         this.eemail = eemail;
-        this.elocal = null;
+        this.elocal = "";
     }
 
     public String getElocal() {

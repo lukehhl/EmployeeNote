@@ -59,9 +59,9 @@ public class EmployeeAdapter extends BaseAdapter {
         hold.nameView.setText(data.get(position).getEname());
         hold.jobView.setText(data.get(position).getEjob());
         hold.departView.setText(data.get(position).getEdepart());
-        hold.localView.setText("定位错误");
+
         //TODO 获取实时位置点
-        realLoc(position);
+        hold.localView.setText(data.get(position).getElocal());
         return convertView;
     }
 
