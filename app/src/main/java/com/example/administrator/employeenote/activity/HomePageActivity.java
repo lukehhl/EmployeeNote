@@ -142,7 +142,7 @@ public class HomePageActivity extends AppCompatActivity {
         //实例化轨迹服务
         trace = new Trace(getApplicationContext(), tapp.getServiceId(), entityName, traceType);
         //位置采集周期
-        int gatherInterval = 5;
+        int gatherInterval = 10;
         //打包周期
         int packInterval = 60;
         //设置位置采集和打包周期

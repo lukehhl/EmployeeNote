@@ -6,6 +6,8 @@ import android.os.Looper;
 import android.widget.Toast;
 
 import com.baidu.mapapi.SDKInitializer;
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.utils.SpatialRelationUtil;
 import com.baidu.trace.Trace;
 
 /**
@@ -15,10 +17,12 @@ public class TrackApplication extends Application {
     private static Context context;
     public static final String serverUrl = "http://60.205.178.163:8080/gesac/";
     private static Boolean exit;
-    private static long serviceId = 122424;
+    public static long serviceId = 122424;
     private String eid;
-
-
+    public static final LatLng tcenter = new LatLng(118.144916,24.703409);
+    public static final int tradius = 200;
+    public static final LatLng jcenter = new LatLng(118.108858,24.604165);
+    public static final int jradius = 200;
 
     @Override
     public void onCreate() {
@@ -49,9 +53,7 @@ public class TrackApplication extends Application {
         this.exit = exit;
     }
 
-
-
-    public static long getServiceId() {
+    public long getServiceId() {
         return serviceId;
     }
 
@@ -59,5 +61,16 @@ public class TrackApplication extends Application {
         Looper.prepare();
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
         Looper.loop();
+    }
+
+    public static boolean isInJM(LatLng point){
+        if (SpatialRelationUtil.isCircleContainsPoint(jcenter,jradius,point))
+            return true;
+        else return false;
+    }
+    public static boolean isInTA(LatLng point){
+        if (SpatialRelationUtil.isCircleContainsPoint(tcenter,tradius,point))
+            return true;
+        else return false;
     }
 }

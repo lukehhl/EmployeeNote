@@ -15,6 +15,7 @@ import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.adapter.EmployeeAdapter;
 import com.example.administrator.employeenote.common.TrackApplication;
 import com.example.administrator.employeenote.entity.EmployeeData;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,7 +34,7 @@ public class EmployeeListActivity extends AppCompatActivity {
     private ImageView btn_back, btn_refresh;
 
     private TrackApplication tapp;
-    private Handler handler;
+    public static Handler handler;
     private String method;
 
     private final String TAG = "retrofit";
@@ -81,7 +82,12 @@ public class EmployeeListActivity extends AppCompatActivity {
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                Gson gson = new Gson();
+                String info = gson.toJson(elist.get(position));
+                Intent it = new Intent(getApplicationContext(), EmployeeActivity.class);
+                it.putExtra("eminfo", info);
+                it.putExtra("type", method);
+                startActivity(it);
             }
         });
     }

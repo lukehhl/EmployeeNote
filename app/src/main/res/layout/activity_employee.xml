@@ -134,7 +134,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
-                    android:text="姓名"
+                    android:text="定位失败"
                     android:textColor="#2828ff" />
             </LinearLayout>
         </LinearLayout>
@@ -229,9 +229,9 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/trace"
+        android:id="@+id/mission"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="26dp"
-        android:text="查看历史行踪" />
+        android:text="查看任务" />
 </LinearLayout>

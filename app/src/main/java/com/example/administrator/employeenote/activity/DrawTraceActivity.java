@@ -71,31 +71,6 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
     private static final int TIME_INTERVAL = 130;
     private static final double DISTANCE = 0.0001;
 
-    /**
-     * 轨迹服务
-     */
-    protected static Trace trace = null;
-
-    /**
-     * entity标识
-     */
-    protected static String entityName = "mycar";
-
-    /**
-     * 鹰眼服务ID，开发者创建的鹰眼服务对应的服务ID
-     */
-    protected static long serviceId = 122424;
-
-    /**
-     * 轨迹服务类型（0 : 不建立socket长连接， 1 : 建立socket长连接但不上传位置数据，2 : 建立socket长连接并上传位置数据）
-     */
-    private int traceType = 2;
-
-    /**
-     * 轨迹服务客户端
-     */
-    protected static LBSTraceClient client = null;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,8 +85,11 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
         mHandler = new Handler(Looper.getMainLooper());
 
         Intent it = getIntent();
-        startTime = Integer.parseInt(it.getStringExtra("startTime").substring(0,10));
-        endTime = Integer.parseInt(it.getStringExtra("endTime").substring(0,10));
+        /*startTime = Integer.parseInt(it.getStringExtra("startTime").substring(0,10));
+        endTime = Integer.parseInt(it.getStringExtra("endTime").substring(0,10));*/
+        startTime = 1471826100;
+        endTime = 1471827000;
+
         initView();
 //         初始化OnTrackListener
         initOnTrackListener();
@@ -123,7 +101,7 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
     private void initView() {
 
         tapp = (TrackApplication) getApplication();
-        initTrace();
+
 
         btnReplay = (Button) findViewById(R.id.btn_replay);
         btnPause = (Button) findViewById(R.id.btn_pause);
@@ -141,18 +119,6 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
                 + Unix2Date(String.valueOf(endTime), "yyyy-MM-dd HH:mm"));
     }
 
-    private void initTrace(){
-        //实例化轨迹服务客户端
-        client = new LBSTraceClient(getApplicationContext());
-        //实例化轨迹服务
-        trace = new Trace(getApplicationContext(), serviceId, entityName, traceType);
-        //位置采集周期
-        int gatherInterval = 5;
-        //打包周期
-        int packInterval = 60;
-        //设置位置采集和打包周期
-        client.setInterval(gatherInterval, packInterval);
-    }
 
     public String Unix2Date(String timestampString, String formats) {
         Long timestamp = Long.parseLong(timestampString) * 1000;
@@ -166,7 +132,7 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
     private void queryHistoryTrack(int processed, String processOption) {
 
         // entity标识
-        String entityName = MainActivity.entityName;
+        String entityName = "mycar";
         // 是否返回精简的结果（0 : 否，1 : 是）On tracking
         int simpleReturn = 0;
         // 是否返回纠偏后轨迹（0 : 否，1 : 是）
@@ -177,7 +143,7 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
         // 分页索引
         int pageIndex = 1;
 
-        client.queryHistoryTrack(serviceId, entityName, simpleReturn,
+        HomePageActivity.client.queryHistoryTrack(tapp.getServiceId(), entityName, simpleReturn,
                 isProcessed, processOption,
                 startTime, endTime,
                 pageSize,

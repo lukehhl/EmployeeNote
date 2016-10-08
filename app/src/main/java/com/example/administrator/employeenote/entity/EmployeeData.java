@@ -4,7 +4,7 @@ package com.example.administrator.employeenote.entity;
  * Created by GE11522 on 2016-9-5.
  */
 public class EmployeeData {
-    private String eid,ename,ejob,edepart,etele,ephone,eemail;
+    private String eid,ename,ejob,edepart,etele,ephone,eemail,elocal;
 
     public EmployeeData(String eid, String ename, String ejob, String edepart, String etele, String ephone, String eemail) {
         this.eid = eid;
@@ -14,6 +14,15 @@ public class EmployeeData {
         this.etele = etele;
         this.ephone = ephone;
         this.eemail = eemail;
+        this.elocal = null;
+    }
+
+    public String getElocal() {
+        return elocal;
+    }
+
+    public void setElocal(String elocal) {
+        this.elocal = elocal;
     }
 
     public String getEtele() {
