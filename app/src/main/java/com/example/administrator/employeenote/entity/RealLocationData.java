@@ -71,7 +71,7 @@ public class RealLocationData {
 
         private double radius;
 
-        private int speed;
+        private float speed;
 
         private int direction;
 
@@ -111,7 +111,7 @@ public class RealLocationData {
             this.speed = speed;
         }
 
-        public int getSpeed() {
+        public float getSpeed() {
             return this.speed;
         }
 

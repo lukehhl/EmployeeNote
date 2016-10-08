@@ -19,6 +19,7 @@ import com.example.administrator.employeenote.activity.MapActivity;
 import com.example.administrator.employeenote.activity.MissionActivity;
 import com.example.administrator.employeenote.entity.VoiceData;
 import com.example.administrator.employeenote.intface.OnDataChangeListener;
+import com.example.administrator.employeenote.utils.PlayerSingleton;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -99,7 +100,7 @@ public class MissionAdapter extends BaseAdapter {
             hold.delView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    delMission(String.valueOf(data.get(position).getVid()),position);
+                    delMission(String.valueOf(data.get(position).getVid()), position);
 
                 }
             });
@@ -107,14 +108,14 @@ public class MissionAdapter extends BaseAdapter {
             hold.finishView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    finMission(String.valueOf(data.get(position).getVid()),position);
+                    finMission(String.valueOf(data.get(position).getVid()), position);
                 }
             });
             hold.traceView.setEnabled(false);
             hold.traceView.setVisibility(View.INVISIBLE);
             hold.stateView.setText("进行中");
             hold.stateView.setTextColor(convertView.getResources().getColor(R.color.red));
-        } else if(data.get(position).getVsign() == 1){ //已完成的任务
+        } else if (data.get(position).getVsign() == 1) { //已完成的任务
 
             hold.delView.setEnabled(false);
             hold.delView.setVisibility(View.INVISIBLE);
@@ -159,7 +160,7 @@ public class MissionAdapter extends BaseAdapter {
         Call<ResponseBody> delMission(@Query("vid") String vid);
     }
 
-    private interface finMissionIF{
+    private interface finMissionIF {
         @GET("finMission.do")
         Call<ResponseBody> finMission(@Query("vid") String vid);
     }
@@ -233,7 +234,7 @@ public class MissionAdapter extends BaseAdapter {
         });
     }
 
-    private void initFinMission(String vid){
+    private void initFinMission(String vid) {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(serverUrl)
@@ -366,13 +367,13 @@ public class MissionAdapter extends BaseAdapter {
     }
 
     private void finMission(final String vid, final int positon) {
-        new Thread(){
+        new Thread() {
             @Override
             public void run() {
                 super.run();
                 initFinMission(vid);
-                while(true){
-                    if ("true".equalsIgnoreCase(finSign)){
+                while (true) {
+                    if ("true".equalsIgnoreCase(finSign)) {
                         MissionActivity.handler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -403,7 +404,7 @@ public class MissionAdapter extends BaseAdapter {
 
     private void playVoice(String filename) {
         try {
-            MediaPlayer mPlayer = MediaPlayer.create(context, Uri.parse(context.getCacheDir() + File.separator + filename));
+            MediaPlayer mPlayer = PlayerSingleton.getInstance(context, Uri.parse(context.getCacheDir() + File.separator + filename));
             mPlayer.reset();
             mPlayer.setDataSource(context.getCacheDir() + File.separator + filename);
             mPlayer.prepare();

@@ -1,6 +1,7 @@
 package com.example.administrator.employeenote.activity;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
@@ -34,6 +35,7 @@ import retrofit2.http.Query;
 
 public class EmployeeListActivity extends AppCompatActivity {
     private ListView listview;
+    private EmployeeAdapter adapter;
     private List<EmployeeData> elist = null;
     private RealLocationData realData = null;
     private ImageView btn_back, btn_refresh;
@@ -66,7 +68,7 @@ public class EmployeeListActivity extends AppCompatActivity {
         btn_back = (ImageView) findViewById(R.id.back);
         btn_refresh = (ImageView) findViewById(R.id.refresh);
 
-        getEInfo();
+        initRetrofit();
 
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,7 +83,7 @@ public class EmployeeListActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //TODO 刷新人员列表操作
 //                listview.removeAllViews();
-                getEInfo();
+                initRetrofit();
             }
         });
 
@@ -118,6 +120,8 @@ public class EmployeeListActivity extends AppCompatActivity {
             public void onResponse(Call<List<EmployeeData>> call, Response<List<EmployeeData>> response) {
                 if (response.isSuccessful()) {
                     elist = response.body();
+                    initRetrofitreal();
+//                    findLocationAtTime(elist);
                     Log.d(TAG, "succeed");
 
                 } else {
@@ -141,6 +145,60 @@ public class EmployeeListActivity extends AppCompatActivity {
         return elist;
     }
 
+    interface realLocGetIF { //retrofit接口
+        @GET("list")
+        Call<RealLocationData> getrealLoc(@Query("ak") String ak,
+                                          @Query("service_id") long service_id,
+                                          @Query("entity_names") String entity_names,
+                                          @Query("active_time") int active_time,
+                                          @Query("return_type") int return_type,
+                                          @Query("page_index") int page_index,
+                                          @Query("page_size") int page_size,
+                                          @Query("mcode") String mcode);
+    }
+
+    public void initRetrofitreal() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://api.map.baidu.com/trace/v2/entity/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        realLocGetIF realLocGetIF = retrofit.create(realLocGetIF.class);
+        String entityNames = "";
+        for (int i = 0; i < elist.size(); i++) {
+            if (i == elist.size() - 1)
+                entityNames += elist.get(i).getEid();
+            else entityNames += elist.get(i).getEid() + ",";
+        }
+        Call<RealLocationData> call = realLocGetIF.getrealLoc("kAq1Mi2NFQT3WUFs7tUQWhjGCEmG38rF",tapp.serviceId,entityNames,
+                1,0,1,1000,"C0:99:6C:50:5D:24:E7:CB:5E:72:37:84:5D:DB:50:BB:35:7F:7F:3D;com.example.administrator.employeenote");
+
+        call.enqueue(new Callback<RealLocationData>() {
+            @Override
+            public void onResponse(Call<RealLocationData> call, Response<RealLocationData> response) {
+                if (response.isSuccessful()) {
+                    realData = response.body();
+                    setLoc();
+                    adapter = new EmployeeAdapter(EmployeeListActivity.this, elist);
+                    listview.setAdapter(adapter);
+                    Log.d(TAG, new Gson().toJson(realData));
+                } else {
+                    try {
+                        Log.d(TAG, response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RealLocationData> call, Throwable t) {
+                Log.d(TAG, t.toString());
+            }
+
+
+        });
+    }
+
     private void findLocationAtTime(List<EmployeeData> ep) {
 
         //entity标识列表（多个entityName，以英文逗号"," 分割）
@@ -162,7 +220,30 @@ public class EmployeeListActivity extends AppCompatActivity {
         // 分页索引
         int pageIndex = 1;
         // Entity监听器
-        OnEntityListener entityListener = new OnEntityListener() {
+//        OnEntityListener entityListener = new OnEntityListener() {
+//            // 查询失败回调接口
+//            @Override
+//            public void onRequestFailedCallback(String arg0) {
+//                Log.i(TAG, "onRequestFailedCallback" + "arg0 = " + arg0);
+//                realsign = false;
+//            }
+//
+//            // 查询entity回调接口，返回查询结果列表
+//            @Override
+//            public void onQueryEntityListCallback(String arg0) {
+//                realData = GsonService.parseJson(arg0,
+//                        RealLocationData.class);
+////                setLoc();
+//                adapter = new EmployeeAdapter(EmployeeListActivity.this, elist);
+//                listview.setAdapter(adapter);
+////                adapter.notifyDataSetChanged();
+//                Log.i(TAG, "onQueryEntityListCallback" + " arg0 = " + arg0);
+//            }
+//        };
+        // 查询实时轨迹
+        Log.i(TAG, "onRequestFailedCallback");
+
+        HomePageActivity.client.queryEntityList(tapp.getServiceId(), entityNames, columnKey, returnType, activeTime, pageSize, pageIndex, new OnEntityListener() {
             // 查询失败回调接口
             @Override
             public void onRequestFailedCallback(String arg0) {
@@ -175,59 +256,13 @@ public class EmployeeListActivity extends AppCompatActivity {
             public void onQueryEntityListCallback(String arg0) {
                 realData = GsonService.parseJson(arg0,
                         RealLocationData.class);
-                realsign = true;
+//                setLoc();
+                adapter = new EmployeeAdapter(EmployeeListActivity.this, elist);
+                listview.setAdapter(adapter);
+//                adapter.notifyDataSetChanged();
                 Log.i(TAG, "onQueryEntityListCallback" + " arg0 = " + arg0);
             }
-        };
-        // 查询实时轨迹
-        HomePageActivity.client.queryEntityList(tapp.getServiceId(), entityNames, columnKey, returnType, activeTime, pageSize, pageIndex, entityListener);
-    }
-
-    private void point2geo(String realLoc) {
-        realData = GsonService.parseJson(realLoc,
-                RealLocationData.class);
-        realsign = true;
-    }
-
-    public void getEInfo() {
-        new Thread() {
-            @Override
-            public void run() {
-                initRetrofit();
-                while (true) {
-                    if (elist != null) {
-                        getRealLoc();
-                        break;
-                    }
-                }
-            }
-        }.start();
-    }
-
-    private void getRealLoc() {
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                realsign = false;
-                findLocationAtTime(elist);
-                while (true) {
-                    if (realsign) {
-                        setLoc();
-                        Log.i(TAG, "local");
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                EmployeeAdapter adapter = new EmployeeAdapter(EmployeeListActivity.this, elist);
-                                listview.setAdapter(adapter);
-                            }
-                        });
-                        break;
-                    }
-
-                }
-            }
-        }.start();
+        });
     }
 
     private void setLoc(){

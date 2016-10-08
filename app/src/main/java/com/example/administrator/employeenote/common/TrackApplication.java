@@ -9,6 +9,7 @@ import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.SpatialRelationUtil;
 import com.baidu.trace.Trace;
+import com.example.administrator.employeenote.entity.EmployeeData;
 
 /**
  * Created by Administrator on 2016/8/13.
@@ -19,10 +20,11 @@ public class TrackApplication extends Application {
     private static Boolean exit;
     public static long serviceId = 122424;
     private String eid;
+    private EmployeeData person;
     public static final LatLng tcenter = new LatLng(118.144916,24.703409);
-    public static final int tradius = 200;
+    public static final int tradius = 10;
     public static final LatLng jcenter = new LatLng(118.108858,24.604165);
-    public static final int jradius = 200;
+    public static final int jradius = 10;
 
     @Override
     public void onCreate() {
@@ -31,6 +33,14 @@ public class TrackApplication extends Application {
         context = getApplicationContext();
         exit = false;
         eid = "8";
+    }
+
+    public EmployeeData getPerson() {
+        return person;
+    }
+
+    public void setPerson(EmployeeData person) {
+        this.person = person;
     }
 
     public String getEid() {

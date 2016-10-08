@@ -17,6 +17,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.administrator.employeenote.R;
+import com.example.administrator.employeenote.common.TrackApplication;
+import com.example.administrator.employeenote.entity.EmployeeData;
 
 public class LoginActivity extends AppCompatActivity {
     private android.support.design.widget.TextInputLayout meid, mepassword;
@@ -25,8 +27,7 @@ public class LoginActivity extends AppCompatActivity {
     private View focusView;
     private SharedPreferences sharedPreferences;
 
-    private Handler mHandler;
-
+    private TrackApplication tapp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
     private void initView() {
 
         sharedPreferences = this.getSharedPreferences("user_info", Context.MODE_PRIVATE);
-        mHandler = new Handler(Looper.getMainLooper());
+        tapp= (TrackApplication) getApplication();
 
         meid = (TextInputLayout) findViewById(R.id.eid);
         mepassword = (TextInputLayout) findViewById(R.id.epassword);
@@ -97,6 +98,7 @@ public class LoginActivity extends AppCompatActivity {
                     et.putString("password", password);
                 } else et.clear();
                 et.commit();
+                tapp.setPerson(new EmployeeData("3","ge11533","黄海龙2","系统应用专员","企业管理部","b","b"));
                 Intent intent = new Intent(LoginActivity.this, HomePageActivity.class);
                 startActivity(intent);
                 finish();

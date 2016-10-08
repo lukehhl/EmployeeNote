@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.trace.LBSTraceClient;
@@ -25,12 +26,13 @@ import java.util.List;
 import java.util.Map;
 
 public class HomePageActivity extends AppCompatActivity {
+    private TextView mename,mdate,mweekdate;
     private GridView gview;
     private List<Map<String, Object>> data_list;
     private SimpleAdapter sim_adapter;
     // 图片封装为一个数组
-    private int[] icon = {R.mipmap.ic_launcher, R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher, R.mipmap.ic_launcher};
+    private int[] icon = {R.drawable.homeperson, R.drawable.homeperson,
+            R.drawable.homemission, R.drawable.homesetup};
     private String[] iconName = {"我的上级", "我的下属", "我的行程", "设置"};
     private TrackApplication tapp;
 
@@ -61,6 +63,11 @@ public class HomePageActivity extends AppCompatActivity {
     private void initView() {
         tapp = (TrackApplication) getApplication();
         gview = (GridView) findViewById(R.id.menugrid);
+        mename = (TextView) findViewById(R.id.ename);
+        mdate = (TextView) findViewById(R.id.date);
+        mweekdate = (TextView) findViewById(R.id.weekdate);
+        mename.setText(tapp.getPerson().getEname());
+
         startMap();
 
         gview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
