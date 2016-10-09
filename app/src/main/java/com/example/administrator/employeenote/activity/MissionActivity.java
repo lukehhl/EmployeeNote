@@ -59,7 +59,7 @@ public class MissionActivity extends AppCompatActivity{
         refresh = (ImageView) findViewById(R.id.refresh);
         mlist = (ListView) findViewById(R.id.mList);
 
-        getMission();
+        initMission();
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,9 +71,8 @@ public class MissionActivity extends AppCompatActivity{
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO 刷新任务
                 vlist.clear();
-                getMission();
+                initMission();
             }
         });
 
@@ -99,8 +98,10 @@ public class MissionActivity extends AppCompatActivity{
             public void onResponse(Call<List<VoiceData>> call, Response<List<VoiceData>> response) {
                 if (response.isSuccessful()) {
                     vlist = response.body();
+                    adapter = new MissionAdapter(MissionActivity.this, vlist);
+                    mlist.setAdapter(adapter);
+                    Toast.makeText(getApplicationContext(), "getlist success", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "succeed");
-                    retrofitSign = true;
                 } else {
                     try {
                         Log.d(TAG, response.errorBody().string());
@@ -117,34 +118,5 @@ public class MissionActivity extends AppCompatActivity{
             }
         });
     }
-
-    public void getMission() {
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                retrofitSign = false;
-                initMission();
-                while (true) {
-                    if (retrofitSign) {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter = new MissionAdapter(MissionActivity.this, vlist);
-                                mlist.setAdapter(adapter);
-                                Toast.makeText(getApplicationContext(), "getlist success", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        break;
-                    }
-                }
-            }
-        }.start();
-    }
-
-//    public static void freshList(){
-//        adapter.notifyDataSetChanged();
-//    }
-
 
 }

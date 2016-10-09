@@ -31,4 +31,6 @@ dependencies {
     //retrofit2.1组件
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.android.support:design:23.4.0'
+    //calendar
+    compile 'com.github.tibolte:agendacalendarview:1.0.4'
 }

@@ -85,10 +85,8 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
         mHandler = new Handler(Looper.getMainLooper());
 
         Intent it = getIntent();
-        /*startTime = Integer.parseInt(it.getStringExtra("startTime").substring(0,10));
-        endTime = Integer.parseInt(it.getStringExtra("endTime").substring(0,10));*/
-        startTime = 1471826100;
-        endTime = 1471827000;
+        startTime = Integer.parseInt(it.getStringExtra("startTime").substring(0,10));
+        endTime = Integer.parseInt(it.getStringExtra("endTime").substring(0,10));
 
         initView();
 //         初始化OnTrackListener

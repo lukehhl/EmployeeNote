@@ -166,32 +166,4 @@ public class EmployeeActivity extends AppCompatActivity {
 
         });
     }
-
-//    private void realLoc() {
-//        new Thread() {
-//            @Override
-//            public void run() {
-//                super.run();
-//                realsign = false;
-//                findLocationAtTime();
-//                while (true) {
-//                    Log.i("loop", "111111111111111111");
-//                    if (realsign&& point!= null) {
-//                        handler.post(new Runnable() {
-//                            @Override
-//                            public void run() {
-//
-//                            }
-//                        });
-//                        break;
-//                    }else if (realError != null){
-//                        Toast.makeText(EmployeeActivity.this, realError, Toast.LENGTH_SHORT).show();
-//                        Log.i("ssss", "3333333");
-//
-//                        break;
-//                    }
-//                }
-//            }
-//        }.start();
-//    }
 }

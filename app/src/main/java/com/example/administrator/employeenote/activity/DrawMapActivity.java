@@ -72,7 +72,6 @@ public class DrawMapActivity extends Activity implements View.OnClickListener {
     public static PolylineOptions polyline = null;
 
     private static MarkerOptions markerOptions = null;
-
     /**
      * Track监听器
      */
@@ -81,7 +80,6 @@ public class DrawMapActivity extends Activity implements View.OnClickListener {
     private MapStatusUpdate msUpdate = null;
 
     private TextView tvDatetime = null;
-
 
     private Polyline mVirtureRoad;
     private Marker mMoveMarker;
@@ -109,7 +107,6 @@ public class DrawMapActivity extends Activity implements View.OnClickListener {
 //         初始化OnTrackListener
         initOnTrackListener();
     }
-
     /**
      * 初始化
      */
@@ -130,7 +127,6 @@ public class DrawMapActivity extends Activity implements View.OnClickListener {
         tvDatetime.setText(" 当前日期 : " + DateUtils.getCurrentDate() + " ");
 
     }
-
     /**
      * 查询历史轨迹
      */
@@ -161,7 +157,6 @@ public class DrawMapActivity extends Activity implements View.OnClickListener {
                 pageIndex,
                 trackListener);
     }
-
     // 查询里程
     private void queryDistance(int processed, String processOption) {
 
@@ -186,7 +181,6 @@ public class DrawMapActivity extends Activity implements View.OnClickListener {
         MainActivity.client.queryDistance(MainActivity.serviceId, entityName, isProcessed, processOption,
                 supplementMode, startTime, endTime, trackListener);
     }
-
     /**
      * 轨迹查询(先选择日期，再根据是否纠偏，发送请求)
      */
@@ -245,7 +239,6 @@ public class DrawMapActivity extends Activity implements View.OnClickListener {
         dateDiolog.show();
 
     }
-
     /**
      * 显示历史轨迹
      *
@@ -283,9 +276,6 @@ public class DrawMapActivity extends Activity implements View.OnClickListener {
                 break;
 
             case R.id.btn_pause:
-//                if (tapp.getExit().equals(false))
-//                    tapp.setExit(true);
-//                else tapp.setExit(false);
                 if (suspended) {
                     suspended = false;
                     synchronized (thread) {
@@ -404,14 +394,11 @@ public class DrawMapActivity extends Activity implements View.OnClickListener {
         return slope;
 
     }
-
-
     /**
      * 方法必须重写
      */
 
-
-    @Override
+   @Override
     protected void onResume() {
         super.onResume();
         tapp.setExit(false);
@@ -468,7 +455,6 @@ public class DrawMapActivity extends Activity implements View.OnClickListener {
         thread = new Thread() {
 
             public void run() {
-
                 for (int i = 0; !tapp.getExit() && i < mVirtureRoad.getPoints().size() - 1; i++) {
 //                    Log.i("movethread", "bbbbbbbbbbbbbbbbbbbbb");
                     final LatLng startPoint = mVirtureRoad.getPoints().get(i);
@@ -478,10 +464,7 @@ public class DrawMapActivity extends Activity implements View.OnClickListener {
                             .zoom(16)
                             .build();
                     final MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
-
-
                     mMoveMarker.setPosition(startPoint);
-
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -489,23 +472,15 @@ public class DrawMapActivity extends Activity implements View.OnClickListener {
                             if (tapp.getExit() || mMapView == null) {
                                 return;
                             }
-//                                mMoveMarker.setRotate((float) getAngle(startPoint,
-//                                        endPoint));
-
                             mBaiduMap.setMapStatus(mMapStatusUpdate);
                         }
                     });
                     double slope = getSlope(startPoint, endPoint);
-
                     //是不是正向的标示（向上设为正向）
                     boolean isReverse = (startPoint.latitude > endPoint.latitude);
-
                     double intercept = getInterception(slope, startPoint);
-
                     double xMoveDistance = isReverse ? getXMoveDistance(slope)
                             : -1 * getXMoveDistance(slope);
-
-
                     for (double j = startPoint.latitude;
                          !((j > endPoint.latitude) ^ isReverse);
                          j = j
@@ -517,7 +492,6 @@ public class DrawMapActivity extends Activity implements View.OnClickListener {
                             latLng = new LatLng(j, startPoint.longitude);
                         }
                         final LatLng finalLatLng = latLng;
-
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -529,7 +503,6 @@ public class DrawMapActivity extends Activity implements View.OnClickListener {
                                 mMoveMarker.setPosition(finalLatLng);
                             }
                         });
-
                         try {
                             Thread.sleep(TIME_INTERVAL);
                             synchronized (thread) {
@@ -550,14 +523,11 @@ public class DrawMapActivity extends Activity implements View.OnClickListener {
                                         }
                                     });
                                 }
-
                             }
-
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
-
                 }
                 mHandler.post(new Runnable() {
                     @Override
@@ -568,7 +538,6 @@ public class DrawMapActivity extends Activity implements View.OnClickListener {
             }
 
         };
-
         thread.start();
     }
 

@@ -45,8 +45,6 @@ public class EmployeeListActivity extends AppCompatActivity {
     private String method;
 
     private final String TAG = "retrofit";
-    private boolean realsign = false;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,72 +194,6 @@ public class EmployeeListActivity extends AppCompatActivity {
             }
 
 
-        });
-    }
-
-    private void findLocationAtTime(List<EmployeeData> ep) {
-
-        //entity标识列表（多个entityName，以英文逗号"," 分割）
-        String entityNames = "";
-        for (int i = 0; i < ep.size(); i++) {
-            if (i == ep.size() - 1)
-                entityNames += ep.get(i).getEid();
-            else entityNames += ep.get(i).getEid() + ",";
-        }
-
-        // 检索条件（格式为 : "key1=value1,key2=value2,....."）
-        String columnKey = "";
-        // 返回结果的类型（0 : 返回全部结果，1 : 只返回entityName的列表）
-        int returnType = 0;
-        // 活跃时间，UNIX时间戳（指定该字段时，返回从该时间点之后仍有位置变动的entity的实时点集合）
-        int activeTime = 0;
-        // 分页大小
-        int pageSize = 1000;
-        // 分页索引
-        int pageIndex = 1;
-        // Entity监听器
-//        OnEntityListener entityListener = new OnEntityListener() {
-//            // 查询失败回调接口
-//            @Override
-//            public void onRequestFailedCallback(String arg0) {
-//                Log.i(TAG, "onRequestFailedCallback" + "arg0 = " + arg0);
-//                realsign = false;
-//            }
-//
-//            // 查询entity回调接口，返回查询结果列表
-//            @Override
-//            public void onQueryEntityListCallback(String arg0) {
-//                realData = GsonService.parseJson(arg0,
-//                        RealLocationData.class);
-////                setLoc();
-//                adapter = new EmployeeAdapter(EmployeeListActivity.this, elist);
-//                listview.setAdapter(adapter);
-////                adapter.notifyDataSetChanged();
-//                Log.i(TAG, "onQueryEntityListCallback" + " arg0 = " + arg0);
-//            }
-//        };
-        // 查询实时轨迹
-        Log.i(TAG, "onRequestFailedCallback");
-
-        HomePageActivity.client.queryEntityList(tapp.getServiceId(), entityNames, columnKey, returnType, activeTime, pageSize, pageIndex, new OnEntityListener() {
-            // 查询失败回调接口
-            @Override
-            public void onRequestFailedCallback(String arg0) {
-                Log.i(TAG, "onRequestFailedCallback" + "arg0 = " + arg0);
-                realsign = false;
-            }
-
-            // 查询entity回调接口，返回查询结果列表
-            @Override
-            public void onQueryEntityListCallback(String arg0) {
-                realData = GsonService.parseJson(arg0,
-                        RealLocationData.class);
-//                setLoc();
-                adapter = new EmployeeAdapter(EmployeeListActivity.this, elist);
-                listview.setAdapter(adapter);
-//                adapter.notifyDataSetChanged();
-                Log.i(TAG, "onQueryEntityListCallback" + " arg0 = " + arg0);
-            }
         });
     }
 

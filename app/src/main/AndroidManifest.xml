@@ -72,7 +72,8 @@
         <activity android:name=".activity.MissionActivity" />
         <activity android:name=".activity.AddMissionActivity" />
         <activity android:name=".activity.SetUpActivity" />
-        <activity android:name=".activity.DrawTraceActivity"></activity>
+        <activity android:name=".activity.DrawTraceActivity" />
+        <activity android:name=".activity.CalendarActivity"></activity>
     </application>
 
 </manifest>

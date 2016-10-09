@@ -25,6 +25,7 @@ import com.baidu.trace.OnStopTraceListener;
 import com.baidu.trace.Trace;
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.common.TrackApplication;
+import com.example.administrator.employeenote.utils.PlayerSingleton;
 
 import java.io.File;
 import java.io.IOException;
@@ -115,7 +116,7 @@ public class AddMissionActivity extends AppCompatActivity {
                     public void run() {
                         super.run();
                         try {
-                            mPlayer = MediaPlayer.create(AddMissionActivity.this, Uri.parse(mFileName));
+                            mPlayer = PlayerSingleton.getInstance(AddMissionActivity.this, Uri.parse(mFileName));
                             mPlayer.reset();
                             mPlayer.setDataSource(mFileName);
                             mPlayer.prepare();
@@ -137,7 +138,7 @@ public class AddMissionActivity extends AppCompatActivity {
                         .setPositiveButton("开始", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                startMission();
+                                initRetrofit();
                                 dialog.cancel();
                             }
                         })
@@ -242,12 +243,24 @@ public class AddMissionActivity extends AppCompatActivity {
         RequestBody description = RequestBody.create(
                 MediaType.parse("multipart/form-data"), descriptionString);
         Call<ResponseBody> call = service.upload(tapp.getEid(), date, description, body, "0");
+
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call,
                                    Response<ResponseBody> response) {
                 if (response.isSuccessful()) { //上传成功
                     Toast.makeText(AddMissionActivity.this, "success", Toast.LENGTH_SHORT).show();
+                    new AlertDialog.Builder(AddMissionActivity.this)
+                            .setMessage("提交成功")
+                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent it = new Intent(AddMissionActivity.this, MissionActivity.class);
+                                    startActivity(it);
+                                    finish();
+                                }
+                            })
+                            .show();
                     retroSign = true;
                 } else
                     try {
@@ -262,39 +275,6 @@ public class AddMissionActivity extends AppCompatActivity {
                 t.printStackTrace();
             }
         });
-    }
-
-    public void startMission() {
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                initRetrofit();
-                while (true) {
-                    //TODO 加载动画
-                    if (retroSign) {
-                        mhandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                new AlertDialog.Builder(AddMissionActivity.this)
-                                        .setMessage("提交成功")
-                                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                Intent it = new Intent(AddMissionActivity.this, MissionActivity.class);
-                                                startActivity(it);
-                                                finish();
-                                            }
-                                        })
-                                        .show();
-                            }
-                        });
-                        break;
-                    }
-                }
-
-            }
-        }.start();
     }
 
 

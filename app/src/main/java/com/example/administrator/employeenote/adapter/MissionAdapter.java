@@ -48,14 +48,12 @@ import static com.example.administrator.employeenote.common.TrackApplication.ser
 public class MissionAdapter extends BaseAdapter {
 
     private static final String TAG = "missionadapter";
-    private Boolean voiceSign = false;
-    private String delSign;
-    private String finSign;
+    private String delSign = null;
+    private String finSign = null;
 
     public List<VoiceData> data;
     private LayoutInflater mInflater;
     private Context context;
-
 
     public MissionAdapter(Context context, List<VoiceData> data) {
         this.context = context;
@@ -63,7 +61,6 @@ public class MissionAdapter extends BaseAdapter {
         mInflater = LayoutInflater.from(context);
 
     }
-
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -82,6 +79,7 @@ public class MissionAdapter extends BaseAdapter {
         } else {
             hold = (ViewHold) convertView.getTag();
         }
+
         hold.yearView.setText(data.get(position).getVtime().toString().substring(0, 4) + "年");
         hold.dateView.setText(data.get(position).getVtime().toString().substring(5, 16).replace('-', '月').replace(' ', '日'));
         hold.playView.setOnClickListener(new View.OnClickListener() {
@@ -89,18 +87,25 @@ public class MissionAdapter extends BaseAdapter {
             public void onClick(View v) {
                 String fname = data.get(position).getVsrc().replaceAll("voice/", "");
                 if (!fileIsExists(fname))
-                    getVoice(data.get(position).getVsrc(),
+                    initGetVoice(data.get(position).getVsrc(),
                             fname);
                 else playVoice(fname);
-
             }
         });
         if (data.get(position).getVsign() == 0) { //进行中的任务
 
+            hold.delView.setEnabled(true);
+            hold.delView.setVisibility(View.VISIBLE);
+            hold.finishView.setEnabled(true);
+            hold.finishView.setVisibility(View.VISIBLE);
+            hold.traceView.setEnabled(false);
+            hold.traceView.setVisibility(View.INVISIBLE);
+
             hold.delView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    delMission(String.valueOf(data.get(position).getVid()), position);
+                    initDelMission(String.valueOf(data.get(position).getVid()), position);
+                    //TODO 删除后处理
 
                 }
             });
@@ -108,20 +113,18 @@ public class MissionAdapter extends BaseAdapter {
             hold.finishView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    finMission(String.valueOf(data.get(position).getVid()), position);
+                    initFinMission(String.valueOf(data.get(position).getVid()), position);
                 }
             });
-            hold.traceView.setEnabled(false);
-            hold.traceView.setVisibility(View.INVISIBLE);
             hold.stateView.setText("进行中");
             hold.stateView.setTextColor(convertView.getResources().getColor(R.color.red));
         } else if (data.get(position).getVsign() == 1) { //已完成的任务
-
             hold.delView.setEnabled(false);
             hold.delView.setVisibility(View.INVISIBLE);
-
             hold.finishView.setEnabled(false);
             hold.finishView.setVisibility(View.INVISIBLE);
+            hold.traceView.setEnabled(true);
+            hold.traceView.setVisibility(View.VISIBLE);
 
             hold.traceView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -148,7 +151,6 @@ public class MissionAdapter extends BaseAdapter {
 
         return convertView;
     }
-
 
     private interface getVoiceIF {
         @GET
@@ -196,7 +198,7 @@ public class MissionAdapter extends BaseAdapter {
         });
     }
 
-    private void initDelMission(String vid) {
+    private void initDelMission(String vid, final int position) {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(serverUrl)
@@ -211,6 +213,9 @@ public class MissionAdapter extends BaseAdapter {
                 if (response.isSuccessful()) {
                     try {
                         delSign = response.body().string();
+                        Toast.makeText(context, delSign, Toast.LENGTH_SHORT).show();
+                        data.remove(position);
+                        notifyDataSetChanged();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -234,7 +239,7 @@ public class MissionAdapter extends BaseAdapter {
         });
     }
 
-    private void initFinMission(String vid) {
+    private void initFinMission(String vid, final int position) {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(serverUrl)
@@ -249,6 +254,9 @@ public class MissionAdapter extends BaseAdapter {
                 if (response.isSuccessful()) {
                     try {
                         finSign = response.body().string();
+                        Toast.makeText(context, finSign, Toast.LENGTH_SHORT).show();
+                        data.get(position).setVsign(1);
+                        notifyDataSetChanged();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -256,6 +264,7 @@ public class MissionAdapter extends BaseAdapter {
                 } else {
                     try {
                         Log.d(TAG, response.errorBody().string());
+                        Toast.makeText(context, response.errorBody().string(), Toast.LENGTH_SHORT).show();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -304,7 +313,7 @@ public class MissionAdapter extends BaseAdapter {
                 }
 
                 outputStream.flush();
-                voiceSign = true;
+                playVoice(filename);
                 return true;
             } catch (IOException e) {
                 return false;
@@ -320,72 +329,6 @@ public class MissionAdapter extends BaseAdapter {
         } catch (IOException e) {
             return false;
         }
-    }
-
-    public void getVoice(final String url, final String filename) {
-        new Thread() {
-            @Override
-            public void run() {
-                initGetVoice(url, filename);
-                while (true) {
-                    if (voiceSign) {
-                        MissionActivity.handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                playVoice(filename);
-                            }
-                        });
-                        break;
-                    }
-                }
-            }
-        }.start();
-    }
-
-    public void delMission(final String vid, final int position) {
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                initDelMission(vid);
-                while (true) {
-                    if ("true".equalsIgnoreCase(delSign)) {
-                        MissionActivity.handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(context, "delete success", Toast.LENGTH_SHORT).show();
-                                data.remove(position);
-                                notifyDataSetChanged();
-                            }
-
-                        });
-                        break;
-                    }
-                }
-            }
-        }.start();
-    }
-
-    private void finMission(final String vid, final int positon) {
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                initFinMission(vid);
-                while (true) {
-                    if ("true".equalsIgnoreCase(finSign)) {
-                        MissionActivity.handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                data.get(positon).setVsign(1);
-                                notifyDataSetChanged();
-                            }
-                        });
-                        break;
-                    }
-                }
-            }
-        }.start();
     }
 
     public boolean fileIsExists(String filename) {
@@ -415,13 +358,11 @@ public class MissionAdapter extends BaseAdapter {
         }
     }
 
-
     class ViewHold {
         //public ImageView image;
         public TextView yearView, dateView, stateView;
         public Button playView, delView, traceView, finishView;
     }
-
 
     @Override
     public int getCount() {
