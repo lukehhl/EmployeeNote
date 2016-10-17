@@ -15,10 +15,7 @@ import android.widget.Toast;
 
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.activity.DrawTraceActivity;
-import com.example.administrator.employeenote.activity.MapActivity;
-import com.example.administrator.employeenote.activity.MissionActivity;
 import com.example.administrator.employeenote.entity.VoiceData;
-import com.example.administrator.employeenote.intface.OnDataChangeListener;
 import com.example.administrator.employeenote.utils.PlayerSingleton;
 
 import java.io.File;

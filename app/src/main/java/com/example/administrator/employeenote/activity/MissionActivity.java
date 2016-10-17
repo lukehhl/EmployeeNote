@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -15,7 +14,6 @@ import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.adapter.MissionAdapter;
 import com.example.administrator.employeenote.common.TrackApplication;
 import com.example.administrator.employeenote.entity.VoiceData;
-import com.example.administrator.employeenote.intface.OnDataChangeListener;
 
 import java.io.IOException;
 import java.util.List;

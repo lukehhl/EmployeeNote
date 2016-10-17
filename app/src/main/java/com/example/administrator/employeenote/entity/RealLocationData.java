@@ -62,6 +62,7 @@ public class RealLocationData {
         }
 
     }
+
     public class Realtime_point {
         private int loc_time;
 

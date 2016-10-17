@@ -25,19 +25,26 @@
         <!--agendaCalendar:calendarPastDayTextColor="@color/theme_light_primary"-->
         <!--agendaCalendar:fabColor="@color/theme_accent" />-->
 
-    <CalendarView
+    <!--<CalendarView-->
+        <!--android:id="@+id/calendar_view"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="220dp"-->
+        <!--android:showWeekNumber="false"-->
+        <!--&gt;-->
+
+    <!--</CalendarView>-->
+
+    <com.dsw.calendar.views.CircleCalendarView
         android:id="@+id/calendar_view"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
-        android:showWeekNumber="false"
-        >
+        android:layout_height="300dp">
+    </com.dsw.calendar.views.CircleCalendarView>
 
-    </CalendarView>
 
-    <TextView
-        android:id="@+id/text"
+    <ListView
+        android:id="@+id/agenda_ls"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="aaaaa"/>
+        />
 
 </LinearLayout>

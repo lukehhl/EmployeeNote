@@ -73,7 +73,8 @@
         <activity android:name=".activity.AddMissionActivity" />
         <activity android:name=".activity.SetUpActivity" />
         <activity android:name=".activity.DrawTraceActivity" />
-        <activity android:name=".activity.CalendarActivity"></activity>
+        <activity android:name=".activity.CalendarActivity" />
+        <activity android:name=".activity.AgendaInfoActivity"></activity>
     </application>
 
 </manifest>
