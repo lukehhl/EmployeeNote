@@ -16,7 +16,7 @@ import com.example.administrator.employeenote.entity.EmployeeData;
  */
 public class TrackApplication extends Application {
     private static Context context;
-    public static final String serverUrl = "http://60.205.178.163:8080/gesac/";
+    public static final String serverUrl = "http://10.30.100.22:8080/gesac/";
     private static Boolean exit;
     public static long serviceId = 122424;
     private String eid;

@@ -32,7 +32,7 @@ public class ShowLogoActivity extends AppCompatActivity {
 //    }
 
     public void gotoMainActivity() {
-        Intent intent = new Intent(ShowLogoActivity.this, AgendaInfoActivity.class);
+        Intent intent = new Intent(ShowLogoActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();
     }

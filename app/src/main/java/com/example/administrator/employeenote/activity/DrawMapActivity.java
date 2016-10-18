@@ -1,6 +1,7 @@
 package com.example.administrator.employeenote.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,6 +28,7 @@ import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
 import com.baidu.trace.OnTrackListener;
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.common.TrackApplication;
@@ -41,506 +43,277 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class DrawMapActivity extends Activity  {
+public class DrawMapActivity extends Activity {
+    BaiduMap mBaiduMap = null;
+    MapView mMapView = null;
 
-//    BaiduMap mBaiduMap = null;
-//    MapView mMapView = null;
-//    private Button btnDate = null;
-//    private Button btnPause = null;
-//    private Button btnDistance = null;
-//
-//    private int startTime = 0;
-//    private int endTime = 0;
-//
-//    private int year = 0;
-//    private int month = 0;
-//    private int day = 0;
-//
-//    // 起点图标
-//    private static BitmapDescriptor bmStart;
-//    // 终点图标
-//    private static BitmapDescriptor bmEnd;
-//
-//    // 起点图标覆盖物
-//    private static MarkerOptions startMarker = null;
-//    // 终点图标覆盖物
-//    private static MarkerOptions endMarker = null;
-//    // 路线覆盖物
-//    public static PolylineOptions polyline = null;
-//
-//    private static MarkerOptions markerOptions = null;
-//    /**
-//     * Track监听器
-//     */
-//    protected static OnTrackListener trackListener = null;
-//
-//    private MapStatusUpdate msUpdate = null;
-//
-//    private TextView tvDatetime = null;
-//
-//    private Polyline mVirtureRoad;
-//    private Marker mMoveMarker;
-//    private Handler mHandler;
-//    private Thread thread;
-//    private TrackApplication tapp;
-//    private boolean suspended = false;
-//
-//    // 通过设置间隔时间和距离可以控制速度和图标移动的距离
-//    private static final int TIME_INTERVAL = 130;
-//    private static final double DISTANCE = 0.0001;
+    private int startTime = 0;
+    private int endTime = 0;
+
+
+    // 起点图标
+    private static BitmapDescriptor bmStart;
+    // 终点图标
+    private static BitmapDescriptor bmEnd;
+
+    // 起点图标覆盖物
+    private static MarkerOptions startMarker = null;
+    // 终点图标覆盖物
+    private static MarkerOptions endMarker = null;
+    // 路线覆盖物
+    public static PolylineOptions polyline = null;
+
+    private static MarkerOptions markerOptions = null;
+
+    /**
+     * Track监听器
+     */
+    protected static OnTrackListener trackListener = null;
+
+    private MapStatusUpdate msUpdate = null;
+
+    private TextView tvDatetime = null;
+
+
+    private TrackApplication tapp;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_map);
-//        mMapView = (MapView) findViewById(R.id.bmapView);
-//        mBaiduMap = mMapView.getMap();
-//        //普通地图
-//        mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
-//
-//        mMapView.showZoomControls(false);
-//        mHandler = new Handler(Looper.getMainLooper());
-//        initView();
-////         初始化OnTrackListener
-//        initOnTrackListener();
+        setContentView(R.layout.activity_draw_trace);
+        mMapView = (MapView) findViewById(R.id.bmapView);
+        mBaiduMap = mMapView.getMap();
+        //普通地图
+        mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
+
+        mMapView.showZoomControls(false);
+
+
+        Intent it = getIntent();
+        startTime = Integer.parseInt(it.getStringExtra("startTime").substring(0, 10));
+        endTime = Integer.parseInt(it.getStringExtra("endTime").substring(0, 10));
+        init();
+
+        // 初始化OnTrackListener
+        initOnTrackListener();
+        queryTrack();
+
+
     }
+
     /**
      * 初始化
      */
-//    private void initView() {
-//
-//        tapp = (TrackApplication) getApplication();
-//        btnDate = (Button) findViewById(R.id.btn_date);
-//        btnDistance = (Button) findViewById(R.id.btn_distance);
-//        btnPause = (Button) findViewById(R.id.btn_pause);
-//        btnPause.setVisibility(View.INVISIBLE);
-//
-//
-//        btnDate.setOnClickListener(this);
-//        btnDistance.setOnClickListener(this);
-//        btnPause.setOnClickListener(this);
-//
-//        tvDatetime = (TextView) findViewById(R.id.tv_datetime);
-////        tvDatetime.setText(" 当前日期 : " + DateUtils.getCurrentDate() + " ");
-//
-//    }
-//    /**
-//     * 查询历史轨迹
-//     */
-//    private void queryHistoryTrack(int processed, String processOption) {
-//
-//        // entity标识
-//        String entityName = MainActivity.entityName;
-//        // 是否返回精简的结果（0 : 否，1 : 是）On tracking
-//        int simpleReturn = 0;
-//        // 是否返回纠偏后轨迹（0 : 否，1 : 是）
-//        int isProcessed = processed;
-//        // 开始时间
-//        if (startTime == 0) {
-//            startTime = (int) (System.currentTimeMillis() / 1000 - 12 * 60 * 60);
-//        }
-//        if (endTime == 0) {
-//            endTime = (int) (System.currentTimeMillis() / 1000);
-//        }
-//        // 分页大小
-//        int pageSize = 1000;
-//        // 分页索引
-//        int pageIndex = 1;
-//
-//        MainActivity.client.queryHistoryTrack(MainActivity.serviceId, entityName, simpleReturn,
-//                isProcessed, processOption,
-//                startTime, endTime,
-//                pageSize,
-//                pageIndex,
-//                trackListener);
-//    }
-//    // 查询里程
-//    private void queryDistance(int processed, String processOption) {
-//
-//        // entity标识
-//        String entityName = MainActivity.entityName;
-//
-//        // 是否返回纠偏后轨迹（0 : 否，1 : 是）
-//        int isProcessed = processed;
-//
-//        // 里程补充
-//        String supplementMode = "driving";
-//
-//        // 开始时间
-//        if (startTime == 0) {
-//            startTime = (int) (System.currentTimeMillis() / 1000 - 12 * 60 * 60);
-//        }
-//        // 结束时间
-//        if (endTime == 0) {
-//            endTime = (int) (System.currentTimeMillis() / 1000);
-//        }
-//
-//        MainActivity.client.queryDistance(MainActivity.serviceId, entityName, isProcessed, processOption,
-//                supplementMode, startTime, endTime, trackListener);
-//    }
-//    /**
-//     * 轨迹查询(先选择日期，再根据是否纠偏，发送请求)
-//     */
-//    private void queryTrack() {
-//        // 选择日期
-//        int[] date = null;
-//        DisplayMetrics dm = new DisplayMetrics();
-//        DrawMapActivity.this.getWindowManager().getDefaultDisplay().getMetrics(dm);
-//        int width = dm.widthPixels;
-//        int height = dm.heightPixels;
-//
-//        if (year == 0 && month == 0 && day == 0) {
-//            String curDate = DateUtils.getCurrentDate();
-//            date = DateUtils.getYMDArray(curDate, "-");
-//        }
-//
-//        if (date != null) {
-//            year = date[0];
-//            month = date[1];
-//            day = date[2];
-//        }
-//
-//        DateDialog dateDiolog = new DateDialog(DrawMapActivity.this, new DateDialog.PriorityListener() {
-//
-//            public void refreshPriorityUI(String sltYear, String sltMonth,
-//                                          String sltDay, DateDialog.CallBack back) {
-//
-//                Log.d("TGA", sltYear + sltMonth + sltDay);
-//                year = Integer.parseInt(sltYear);
-//                month = Integer.parseInt(sltMonth);
-//                day = Integer.parseInt(sltDay);
-//                String st = year + "年" + month + "月" + day + "日0时0分0秒";
-//                String et = year + "年" + month + "月" + day + "日23时59分59秒";
-//
-//                startTime = Integer.parseInt(DateUtils.getTimeToStamp(st));
-//                endTime = Integer.parseInt(DateUtils.getTimeToStamp(et));
-//
-//                back.execute();
-//            }
-//
-//        }, new DateDialog.CallBack() {
-//
-//            public void execute() {
-//
-//                tvDatetime.setText(" 当前日期 : " + year + "-" + month + "-" + day + " ");
-//
-//                Toast.makeText(DrawMapActivity.this, "正在查询纠偏后的历史轨迹，请稍候", Toast.LENGTH_SHORT).show();
-//                queryHistoryTrack(1, "need_denoise=1,need_vacuate=1,need_mapmatch=1");
-//
-//            }
-//        }, year, month, day, width, height, "选择日期", 1);
-//
-//        Window window = dateDiolog.getWindow();
-//        window.setGravity(Gravity.CENTER); // 此处可以设置dialog显示的位置
-//        dateDiolog.setCancelable(true);
-//        dateDiolog.show();
-//
-//    }
-//    /**
-//     * 显示历史轨迹
-//     *
-//     * @param historyTrack
-//     */
-//    private void showHistoryTrack(String historyTrack) {
-//
-//        HistoryTrackData historyTrackData = GsonService.parseJson(historyTrack,
-//                HistoryTrackData.class);
-//
-//
-//        List<LatLng> latLngList = new ArrayList<LatLng>();
-//        if (historyTrackData != null && historyTrackData.getStatus() == 0) {
-//            if (historyTrackData.getListPoints() != null) {
-//                latLngList.addAll(historyTrackData.getListPoints());
-//            }
-//            // 绘制历史轨迹
-////            drawHistoryTrack(latLngList, historyTrackData.distance);
-//            mBaiduMap.clear();
-//
-//            initRoadData(latLngList);
-//            tapp.setExit(true);
-//            moveLooper();
-//
-//        }
-//
-//    }
-//
-//    public void onClick(View v) {
-//        // TODO Auto-generated method stub
-//        switch (v.getId()) {
-//            case R.id.btn_date:
-//                // 查询轨迹
-//                queryTrack();
-//                break;
-//
-//            case R.id.btn_pause:
-//                if (suspended) {
-//                    suspended = false;
-//                    synchronized (thread) {
-//                        thread.notify();
-//                    }
-//                } else suspended = true;
-//                break;
-//
-//            case R.id.btn_distance:
-//                queryDistance(0, null);
-//                break;
-//
-//            default:
-//                break;
-//        }
-//    }
-//
-//    /**
-//     * 初始化OnTrackListener
-//     */
-//    private void initOnTrackListener() {
-//
-//        trackListener = new OnTrackListener() {
-//
-//            // 请求失败回调接口
-//            @Override
-//            public void onRequestFailedCallback(String arg0) {
-//                // TODO Auto-generated method stub
-//                TrackApplication.showMessage("track请求失败回调接口消息 : " + arg0);
-//            }
-//
-//            // 查询历史轨迹回调接口
-//            @Override
-//            public void onQueryHistoryTrackCallback(String arg0) {
-//                // TODO Auto-generated method stub
-//                super.onQueryHistoryTrackCallback(arg0);
-//                showHistoryTrack(arg0);
-//            }
-//
-//            @Override
-//            public void onQueryDistanceCallback(String arg0) {
-//                // TODO Auto-generated method stub
-//                try {
-//                    JSONObject dataJson = new JSONObject(arg0);
-//                    if (null != dataJson && dataJson.has("status") && dataJson.getInt("status") == 0) {
-//                        double distance = dataJson.getDouble("distance");
-//                        DecimalFormat df = new DecimalFormat("#.0");
-//                        TrackApplication.showMessage("里程 : " + df.format(distance) + "米");
-//                    }
-//                } catch (JSONException e) {
-//                    // TODO Auto-generated catch block
-//                    TrackApplication.showMessage("queryDistance回调消息 : " + arg0);
-//                }
-//            }
-//
-//            @Override
-//            public Map<String, String> onTrackAttrCallback() {
-//                // TODO Auto-generated method stub
-//                System.out.println("onTrackAttrCallback");
-//                return null;
-//            }
-//
-//        };
-//    }
-//
-//
-//    //绘制平滑轨迹
-//    private void initRoadData(final List<LatLng> polylines) {
-//
-//        OverlayOptions polylineOptions;
-//
-//        polylineOptions = new PolylineOptions().points(polylines).width(10).color(Color.RED);
-//
-//        mVirtureRoad = (Polyline) mBaiduMap.addOverlay(polylineOptions);
-//
-//        OverlayOptions markerOptions;
-//        markerOptions = new MarkerOptions()
-//                .flat(true)
-//                .anchor(0.5f, 0.5f)
-//                .icon(BitmapDescriptorFactory
-//                        .fromResource(R.mipmap.icon_gcoding1))
-//                .position(polylines.get(0));
-//        mMoveMarker = (Marker) mBaiduMap.addOverlay(markerOptions);
-//        System.out.println("aaaaaaaaaaaaaaaaaaaa");
-//    }
-//
-//    /**
-//     * 根据点和斜率算取截距
-//     */
-//    private double getInterception(double slope, LatLng point) {
-//
-//        double interception = point.latitude - slope * point.longitude;
-//        return interception;
-//    }
-//
-//    /**
-//     * 算取斜率
-//     */
-//    private double getSlope(int startIndex) {
-//        if ((startIndex + 1) >= mVirtureRoad.getPoints().size()) {
-//            throw new RuntimeException("index out of bonds");
-//        }
-//        LatLng startPoint = mVirtureRoad.getPoints().get(startIndex);
-//        LatLng endPoint = mVirtureRoad.getPoints().get(startIndex + 1);
-//        return getSlope(startPoint, endPoint);
-//    }
-//
-//    /**
-//     * 算斜率
-//     */
-//    private double getSlope(LatLng fromPoint, LatLng toPoint) {
-//        if (toPoint.longitude == fromPoint.longitude) {
-//            return Double.MAX_VALUE;
-//        }
-//        double slope = ((toPoint.latitude - fromPoint.latitude) / (toPoint.longitude - fromPoint.longitude));
-//        return slope;
-//
-//    }
-//    /**
-//     * 方法必须重写
-//     */
-//
-//   @Override
-//    protected void onResume() {
-//        super.onResume();
-//        tapp.setExit(false);
-//        mMapView.onResume();
-//    }
-//
-//    /**
-//     * 方法必须重写
-//     */
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        tapp.setExit(true);
-//        mMapView.onPause();
-//
-//    }
-//
-//    /**
-//     * 方法必须重写
-//     */
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//        mMapView.onSaveInstanceState(outState);
-//    }
-//
-//    /**
-//     * 方法必须重写
-//     */
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        tapp.setExit(true);
-//        mMapView.onDestroy();
-//        mBaiduMap.clear();
-//    }
-//
-//    /**
-//     * 计算x方向每次移动的距离
-//     */
-//    private double getXMoveDistance(double slope) {
-//        if (slope == Double.MAX_VALUE) {
-//            return DISTANCE;
-//        }
-//        return Math.abs((DISTANCE * slope) / Math.sqrt(1 + slope * slope));
-//    }
-//
-//    /**
-//     * 循环进行移动逻辑
-//     */
-//    public void moveLooper() {
-//        tapp.setExit(false);
-//
-//        thread = new Thread() {
-//
-//            public void run() {
-//                for (int i = 0; !tapp.getExit() && i < mVirtureRoad.getPoints().size() - 1; i++) {
-////                    Log.i("movethread", "bbbbbbbbbbbbbbbbbbbbb");
-//                    final LatLng startPoint = mVirtureRoad.getPoints().get(i);
-//                    final LatLng endPoint = mVirtureRoad.getPoints().get(i + 1);
-//                    MapStatus mMapStatus = new MapStatus.Builder()
-//                            .target(centrepoint(startPoint, endPoint))
-//                            .zoom(16)
-//                            .build();
-//                    final MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
-//                    mMoveMarker.setPosition(startPoint);
-//                    mHandler.post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            // refresh marker's rotate
-//                            if (tapp.getExit() || mMapView == null) {
-//                                return;
-//                            }
-//                            mBaiduMap.setMapStatus(mMapStatusUpdate);
-//                        }
-//                    });
-//                    double slope = getSlope(startPoint, endPoint);
-//                    //是不是正向的标示（向上设为正向）
-//                    boolean isReverse = (startPoint.latitude > endPoint.latitude);
-//                    double intercept = getInterception(slope, startPoint);
-//                    double xMoveDistance = isReverse ? getXMoveDistance(slope)
-//                            : -1 * getXMoveDistance(slope);
-//                    for (double j = startPoint.latitude;
-//                         !((j > endPoint.latitude) ^ isReverse);
-//                         j = j
-//                                 - xMoveDistance) {
-//                        LatLng latLng = null;
-//                        if (slope != Double.MAX_VALUE) {
-//                            latLng = new LatLng(j, (j - intercept) / slope);
-//                        } else {
-//                            latLng = new LatLng(j, startPoint.longitude);
-//                        }
-//                        final LatLng finalLatLng = latLng;
-//                        mHandler.post(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                if (mMapView == null) {
-//                                    return;
-//                                }
-//                                // refresh marker's position
-////                                else if (!tapp.getExit())
-//                                mMoveMarker.setPosition(finalLatLng);
-//                            }
-//                        });
-//                        try {
-//                            Thread.sleep(TIME_INTERVAL);
-//                            synchronized (thread) {
-//                                if (suspended) {
-//                                    mHandler.post(new Runnable() {
-//                                        @Override
-//                                        public void run() {
-//                                            btnPause.setText("播放");
-//                                        }
-//                                    });
-//                                    thread.wait();
-//                                } else {
-//                                    mHandler.post(new Runnable() {
-//                                        @Override
-//                                        public void run() {
-//                                            btnPause.setVisibility(View.VISIBLE);
-//                                            btnPause.setText("暂停");
-//                                        }
-//                                    });
-//                                }
-//                            }
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-//                mHandler.post(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        btnPause.setText("播放");
-//                    }
-//                });
-//            }
-//
-//        };
-//        thread.start();
-//    }
-//
-//    public LatLng centrepoint(LatLng s, LatLng e) {
-//        LatLng c = new LatLng((s.latitude + e.latitude) / 2, (s.longitude + e.longitude) / 2);
-//        return c;
-//    }
+    private void init() {
+        tapp = (TrackApplication) getApplication();
+
+        tvDatetime = (TextView) findViewById(R.id.tv_datetime);
+//        tvDatetime.setText(" 任务时间 : \n" + String.valueOf(startTime) + " — "
+//                + String.valueOf(endTime));
+        tvDatetime.setText(" 任务时间 : \n" + Unix2Date(String.valueOf(startTime), "yyyy-MM-dd HH:mm") + " 至 "
+                + Unix2Date(String.valueOf(endTime), "yyyy-MM-dd HH:mm"));
+
+    }
+
+    public String Unix2Date(String timestampString, String formats) {
+        Long timestamp = Long.parseLong(timestampString) * 1000;
+        String date = new java.text.SimpleDateFormat(formats).format(new java.util.Date(timestamp));
+        return date;
+    }
+
+    /**
+     * 查询历史轨迹
+     */
+    private void queryHistoryTrack(int processed, String processOption) {
+
+        // entity标识
+        String entityName = tapp.getPerson().getEname();
+        // 是否返回精简的结果（0 : 否，1 : 是）
+        int simpleReturn = 0;
+        // 是否返回纠偏后轨迹（0 : 否，1 : 是）
+        int isProcessed = processed;
+
+        // 分页大小
+        int pageSize = 1000;
+        // 分页索引
+        int pageIndex = 1;
+
+        HomePageActivity.client.queryHistoryTrack(tapp.serviceId, "mycar", simpleReturn,
+                isProcessed, processOption,
+                startTime, endTime,
+                pageSize,
+                pageIndex,
+                trackListener);
+    }
+
+    // 查询里程
+
+    /**
+     * 轨迹查询(先选择日期，再根据是否纠偏，发送请求)
+     */
+    private void queryTrack() {
+        queryHistoryTrack(1, "need_denoise=1,need_vacuate=1,need_mapmatch=1");
+    }
+
+    /**
+     * 显示历史轨迹
+     *
+     * @param historyTrack
+     */
+    private void showHistoryTrack(String historyTrack) {
+
+        HistoryTrackData historyTrackData = GsonService.parseJson(historyTrack,
+                HistoryTrackData.class);
+
+        List<LatLng> latLngList = new ArrayList<LatLng>();
+        if (historyTrackData != null && historyTrackData.getStatus() == 0) {
+            if (historyTrackData.getListPoints() != null) {
+                latLngList.addAll(historyTrackData.getListPoints());
+            }
+
+            // 绘制历史轨迹
+            drawHistoryTrack(latLngList, historyTrackData.distance);
+
+        }
+
+    }
+
+
+    /**
+     * 初始化OnTrackListener
+     */
+    private void initOnTrackListener() {
+
+        trackListener = new OnTrackListener() {
+
+            // 请求失败回调接口
+            @Override
+            public void onRequestFailedCallback(String arg0) {
+                // TODO Auto-generated method stub
+                TrackApplication.showMessage("track请求失败回调接口消息 : " + arg0);
+            }
+
+            // 查询历史轨迹回调接口
+            @Override
+            public void onQueryHistoryTrackCallback(String arg0) {
+                // TODO Auto-generated method stub
+                super.onQueryHistoryTrackCallback(arg0);
+                showHistoryTrack(arg0);
+            }
+
+            @Override
+            public void onQueryDistanceCallback(String arg0) {
+                // TODO Auto-generated method stub
+                try {
+                    JSONObject dataJson = new JSONObject(arg0);
+                    if (null != dataJson && dataJson.has("status") && dataJson.getInt("status") == 0) {
+                        double distance = dataJson.getDouble("distance");
+                        DecimalFormat df = new DecimalFormat("#.0");
+                        TrackApplication.showMessage("里程 : " + df.format(distance) + "米");
+                    }
+                } catch (JSONException e) {
+                    // TODO Auto-generated catch block
+                    TrackApplication.showMessage("queryDistance回调消息 : " + arg0);
+                }
+            }
+
+            @Override
+            public Map<String, String> onTrackAttrCallback() {
+                // TODO Auto-generated method stub
+                System.out.println("onTrackAttrCallback");
+                return null;
+            }
+
+        };
+    }
+
+    /**
+     * 绘制历史轨迹
+     *
+     * @param points
+     */
+    private void drawHistoryTrack(final List<LatLng> points, final double distance) {
+        // 绘制新覆盖物前，清空之前的覆盖物
+        mBaiduMap.clear();
+
+        if (points.size() == 1) {
+            points.add(points.get(0));
+        }
+
+        if (points == null || points.size() == 0) {
+            TrackApplication.showMessage("当前查询无轨迹点");
+            resetMarker();
+        } else if (points.size() > 1) {
+
+            LatLng llC = points.get(0);
+            LatLng llD = points.get(points.size() - 1);
+            LatLngBounds bounds = new LatLngBounds.Builder()
+                    .include(llC).include(llD).build();
+
+            msUpdate = MapStatusUpdateFactory.newLatLngBounds(bounds);
+
+            bmStart = BitmapDescriptorFactory.fromResource(R.mipmap.icon_start);
+            bmEnd = BitmapDescriptorFactory.fromResource(R.mipmap.icon_end);
+
+            // 添加起点图标
+            startMarker = new MarkerOptions()
+                    .position(points.get(points.size() - 1)).icon(bmStart)
+                    .zIndex(9).draggable(true);
+
+            // 添加终点图标
+            endMarker = new MarkerOptions().position(points.get(0))
+                    .icon(bmEnd).zIndex(9).draggable(true);
+
+            // 添加路线（轨迹）
+            polyline = new PolylineOptions().width(10)
+                    .color(Color.RED).points(points);
+
+            markerOptions = new MarkerOptions();
+            markerOptions.flat(true);
+            markerOptions.anchor(0.5f, 0.5f);
+            markerOptions.icon(BitmapDescriptorFactory
+                    .fromResource(R.mipmap.icon_gcoding));
+            markerOptions.position(points.get(points.size() - 1));
+
+            addMarker();
+
+            TrackApplication.showMessage("当前轨迹里程为 : " + (int) distance + "米");
+
+        }
+
+    }
+
+    /**
+     * 添加覆盖物
+     */
+    protected void addMarker() {
+
+        if (null != msUpdate) {
+            mBaiduMap.animateMapStatus(msUpdate, 2000);
+        }
+
+        if (null != startMarker) {
+            mBaiduMap.addOverlay(startMarker);
+        }
+
+        if (null != endMarker) {
+            mBaiduMap.addOverlay(endMarker);
+        }
+
+        if (null != polyline) {
+            mBaiduMap.addOverlay(polyline);
+        }
+
+    }
+
+    /**
+     * 重置覆盖物
+     */
+    private void resetMarker() {
+        startMarker = null;
+        endMarker = null;
+        polyline = null;
+    }
 
 }

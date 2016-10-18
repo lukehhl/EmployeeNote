@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.administrator.employeenote.R;
+import com.example.administrator.employeenote.activity.DrawMapActivity;
 import com.example.administrator.employeenote.activity.DrawTraceActivity;
 import com.example.administrator.employeenote.entity.VoiceData;
 import com.example.administrator.employeenote.utils.PlayerSingleton;
@@ -131,11 +132,11 @@ public class MissionAdapter extends BaseAdapter {
 //                    startTime = String.valueOf(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(data.get(position).getVtime().toString()).getTime());
 //                    endTime = String.valueOf(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(data.get(position).getEtime().toString()).getTime());
                         startTime = String.valueOf(new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss").parse("2016/08/22 08:40:00").getTime());
-                        endTime = String.valueOf(new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss").parse("2016/08/22 08:45:00").getTime());
+                        endTime = String.valueOf(new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss").parse("2016/08/22 08:55:00").getTime());
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
-                    Intent it = new Intent(context, DrawTraceActivity.class);
+                    Intent it = new Intent(context, DrawMapActivity.class);
                     it.putExtra("startTime", startTime);
                     it.putExtra("endTime", endTime);
                     context.startActivity(it);
