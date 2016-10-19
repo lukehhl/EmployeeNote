@@ -1,7 +1,6 @@
 package com.example.administrator.employeenote.activity;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
@@ -13,13 +12,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.trace.OnEntityListener;
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.adapter.EmployeeAdapter;
 import com.example.administrator.employeenote.common.TrackApplication;
 import com.example.administrator.employeenote.entity.EmployeeData;
 import com.example.administrator.employeenote.entity.RealLocationData;
-import com.example.administrator.employeenote.utils.GsonService;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -106,7 +103,7 @@ public class EmployeeListActivity extends AppCompatActivity {
 
     public List<EmployeeData> initRetrofit() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(tapp.serverUrl)
+                .baseUrl(tapp.SERVERURL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         employeeGetIF employeeGetIF = retrofit.create(employeeGetIF.class);

@@ -8,7 +8,6 @@ import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,10 +18,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baidu.trace.LBSTraceClient;
-import com.baidu.trace.OnStartTraceListener;
-import com.baidu.trace.OnStopTraceListener;
-import com.baidu.trace.Trace;
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.common.TrackApplication;
 import com.example.administrator.employeenote.utils.PlayerSingleton;
@@ -44,7 +39,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
-import retrofit2.http.Query;
 
 public class AddMissionActivity extends AppCompatActivity {
     private ImageView back;
@@ -228,7 +222,7 @@ public class AddMissionActivity extends AppCompatActivity {
 
     public void initRetrofit() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(tapp.serverUrl)
+                .baseUrl(tapp.SERVERURL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         //先创建 service

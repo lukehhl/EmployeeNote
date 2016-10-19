@@ -85,7 +85,7 @@ public class MissionActivity extends AppCompatActivity{
 
     public void initMission() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(tapp.serverUrl)
+                .baseUrl(tapp.SERVERURL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         missionGetIF missionGetIF = retrofit.create(missionGetIF.class);

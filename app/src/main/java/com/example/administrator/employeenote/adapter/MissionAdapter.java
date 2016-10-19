@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.activity.DrawMapActivity;
-import com.example.administrator.employeenote.activity.DrawTraceActivity;
 import com.example.administrator.employeenote.entity.VoiceData;
 import com.example.administrator.employeenote.utils.PlayerSingleton;
 
@@ -37,7 +36,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
 
-import static com.example.administrator.employeenote.common.TrackApplication.serverUrl;
+import static com.example.administrator.employeenote.common.TrackApplication.SERVERURL;
 
 /**
  * Created by GE11522 on 2016/9/28.
@@ -169,7 +168,7 @@ public class MissionAdapter extends BaseAdapter {
         Log.d(TAG, url);
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(serverUrl)
+                .baseUrl(SERVERURL)
                 .build();
 
 
@@ -199,7 +198,7 @@ public class MissionAdapter extends BaseAdapter {
     private void initDelMission(String vid, final int position) {
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(serverUrl)
+                .baseUrl(SERVERURL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         delVoiceIF delVoiceIF = retrofit.create(delVoiceIF.class);
@@ -240,7 +239,7 @@ public class MissionAdapter extends BaseAdapter {
     private void initFinMission(String vid, final int position) {
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(serverUrl)
+                .baseUrl(SERVERURL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         finMissionIF finmissionIF = retrofit.create(finMissionIF.class);

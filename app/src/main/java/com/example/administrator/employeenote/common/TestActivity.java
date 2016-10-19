@@ -7,14 +7,17 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.administrator.employeenote.R;
+import com.example.administrator.employeenote.entity.AgendaData;
 
 import java.util.Calendar;
+import java.util.List;
 
 public class TestActivity extends Activity implements View.OnClickListener {
     private Button b1, b2;
@@ -22,6 +25,8 @@ public class TestActivity extends Activity implements View.OnClickListener {
     private Button mReadEventButton;
     private Button mWriteEventButton;
     private TextView tx;
+
+    private TrackApplication tapp;
 
     private static String calanderURL = "";
     private static String calanderEventURL = "";
@@ -45,10 +50,11 @@ public class TestActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
-        setupViews();
+        initView();
     }
 
-    private void setupViews() {
+    private void initView() {
+        tapp = (TrackApplication) getApplication();
         mReadUserButton = (Button) findViewById(R.id.readUserButton);
         mReadEventButton = (Button) findViewById(R.id.readEventButton);
         mWriteEventButton = (Button) findViewById(R.id.writeEventButton);
@@ -88,13 +94,6 @@ public class TestActivity extends Activity implements View.OnClickListener {
             if (userCursor.getCount() > 0) {
                 userCursor.moveToFirst();
                 calId = userCursor.getString(userCursor.getColumnIndex("_id"));
-
-            }
-
-             class EventData{
-                private String title,description;
-                 private long dtstart,dtend;
-                 private int event_id,hasalarm,minutes;
             }
 
             ContentValues event = new ContentValues();
@@ -124,6 +123,37 @@ public class TestActivity extends Activity implements View.OnClickListener {
             getContentResolver().insert(Uri.parse(calanderRemiderURL), values);
             Toast.makeText(TestActivity.this, "插入事件成功!!!", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void insAgenda(List<AgendaData.EventData> eventDatas) {
+        for (int i = 0; i < eventDatas.size(); i++) {
+            Cursor userCursor = getContentResolver().query(Uri.parse(calanderURL), null,
+                    null, null, null);
+            if (userCursor.getCount() > 0) {
+                userCursor.moveToFirst();
+                tapp.calendar_id = userCursor.getString(userCursor.getColumnIndex("_id"));
+            }
+
+            ContentValues event = new ContentValues();
+            event.put("title", eventDatas.get(i).getTitle());
+            event.put("description", eventDatas.get(i).getDescription());
+            //插入hoohbood@gmail.com这个账户
+            event.put("calendar_id", tapp.calendar_id);
+
+            event.put("dtstart", eventDatas.get(i).getDtstart());
+            event.put("dtend", eventDatas.get(i).getDtend());
+            event.put("hasAlarm", eventDatas.get(i).getHasalarm());
+            event.put(CalendarContract.Events.EVENT_TIMEZONE, tapp.TIMEZONE);
+
+            Uri newEvent = getContentResolver().insert(Uri.parse(calanderEventURL), event);
+            long id = Long.parseLong(newEvent.getLastPathSegment());
+            ContentValues values = new ContentValues();
+            values.put("event_id", eventDatas.get(i).getEvent_id());
+            values.put("minutes", eventDatas.get(i).getMinutes());
+            getContentResolver().insert(Uri.parse(calanderRemiderURL), values);
+            Log.i("insAgenda", "success");
+        }
+
     }
 
 

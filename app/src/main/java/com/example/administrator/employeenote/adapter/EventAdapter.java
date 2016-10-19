@@ -16,14 +16,14 @@ import java.util.List;
  * Created by GE11522 on 2016-10-17.
  */
 
-public class AgendaInfoAdapter extends BaseAdapter {
-    public List<AgendaData.AgendaInfoData> data;
+public class EventAdapter extends BaseAdapter {
+    public List<AgendaData.EventData> data;
     private LayoutInflater mInflater;
     private Context context;
 
-    private final String TAG = "AgendaInfoAdapter";
+    private final String TAG = "EventAdapter";
 
-    public AgendaInfoAdapter(Context context, List<AgendaData.AgendaInfoData> data) {
+    public EventAdapter(Context context, List<AgendaData.EventData> data) {
         this.context = context;
         this.data = data;
         mInflater = LayoutInflater.from(context);
@@ -34,7 +34,7 @@ public class AgendaInfoAdapter extends BaseAdapter {
         ViewHold hold = null;
         if (convertView == null) {
             hold = new ViewHold();
-            convertView = mInflater.inflate(R.layout.list_agendainfo, null);
+            convertView = mInflater.inflate(R.layout.list_evemt, null);
             hold.timeView = (TextView) convertView.findViewById(R.id.time);
             hold.titleView = (TextView) convertView.findViewById(R.id.title);
             convertView.setTag(hold);
@@ -42,7 +42,7 @@ public class AgendaInfoAdapter extends BaseAdapter {
             hold = (ViewHold) convertView.getTag();
         }
 
-        hold.timeView.setText(data.get(position).getTime());
+        hold.timeView.setText(String.valueOf(data.get(position).getDtstart()));
         hold.titleView.setText(data.get(position).getTitle());
 
         return convertView;

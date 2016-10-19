@@ -8,7 +8,6 @@ import android.widget.Toast;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.SpatialRelationUtil;
-import com.baidu.trace.Trace;
 import com.example.administrator.employeenote.entity.EmployeeData;
 
 /**
@@ -16,16 +15,17 @@ import com.example.administrator.employeenote.entity.EmployeeData;
  */
 public class TrackApplication extends Application {
     private static Context context;
-    public static final String serverUrl = "http://10.30.100.22:8080/gesac/";
+    public static final String SERVERURL = "http://10.30.100.22:8080/gesac/";
+    public static final String TIMEZONE = "Asia/Shanghai";
     private static Boolean exit;
     public static long serviceId = 122424;
-    public static String calendar_id;
+    public static String calendar_id = "";
     private String eid;
     private EmployeeData person;
-    public static final LatLng tcenter = new LatLng(118.144916,24.703409);
-    public static final int tradius = 10;
-    public static final LatLng jcenter = new LatLng(118.108858,24.604165);
-    public static final int jradius = 10;
+    public static final LatLng TCENTER = new LatLng(118.144916,24.703409);
+    public static final int TRADIUS = 10;
+    public static final LatLng JCENTER = new LatLng(118.108858,24.604165);
+    public static final int JRADIUS = 10;
 
     @Override
     public void onCreate() {
@@ -75,12 +75,12 @@ public class TrackApplication extends Application {
     }
 
     public static boolean isInJM(LatLng point){
-        if (SpatialRelationUtil.isCircleContainsPoint(jcenter,jradius,point))
+        if (SpatialRelationUtil.isCircleContainsPoint(JCENTER, JRADIUS,point))
             return true;
         else return false;
     }
     public static boolean isInTA(LatLng point){
-        if (SpatialRelationUtil.isCircleContainsPoint(tcenter,tradius,point))
+        if (SpatialRelationUtil.isCircleContainsPoint(TCENTER, TRADIUS,point))
             return true;
         else return false;
     }

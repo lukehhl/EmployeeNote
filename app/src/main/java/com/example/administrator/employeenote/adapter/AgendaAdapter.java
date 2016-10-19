@@ -52,12 +52,12 @@ public class AgendaAdapter extends BaseAdapter {
         hold.monthView.setText(data.get(position).getMonth());
         hold.dateView.setText(data.get(position).getDate());
         hold.weekView.setText(data.get(position).getWeek());
-        hold.deslsView.setAdapter(new AgendaInfoAdapter(context, data.get(position).getAgendaInfoData()));
+        hold.deslsView.setAdapter(new EventAdapter(context, data.get(position).getEventDatas()));
         hold.deslsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position1, long id) {
                 Intent it = new Intent(context, AgendaInfoActivity.class);
-                it.putExtra("agendaid", data.get(position).getAgendaInfoData().get(position1).getId());
+                it.putExtra("event_id", data.get(position).getEventDatas().get(position1).getEvent_id());
                 context.startActivity(it);
             }
         });

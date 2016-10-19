@@ -8,35 +8,37 @@ import java.util.List;
 
 public class AgendaData {
     private String year, month, date, week;
-    private int count;
-    private List<AgendaInfoData> agendaInfoData;
+    private List<EventData> eventDatas;
 
-    public AgendaData(String year, String month, String date, String week, int count, List<AgendaInfoData> agendaInfoData) {
+    public AgendaData(String year, String month, String date, String week, List<EventData> eventDatas) {
         this.year = year;
         this.month = month;
         this.date = date;
         this.week = week;
-        this.count = count;
-        this.agendaInfoData = agendaInfoData;
+        this.eventDatas = eventDatas;
     }
 
-    public class AgendaInfoData{
-        private int id;
-        private String time;
-        private String title;
+    public class EventData {
+        private String title,description;
+        private long dtstart,dtend,event_id;
+        private int hasalarm,minutes;
 
-        public AgendaInfoData(int id, String time, String title) {
-            this.id = id;
-            this.time = time;
+        public EventData(String title, String description, long dtstart, long dtend, int event_id) {
             this.title = title;
+            this.description = description;
+            this.dtstart = dtstart;
+            this.dtend = dtend;
+            this.event_id = event_id;
         }
 
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
+        public EventData(String title, String description, long dtstart, long dtend, int event_id, int hasalarm, int minutes) {
+            this.title = title;
+            this.description = description;
+            this.dtstart = dtstart;
+            this.dtend = dtend;
+            this.event_id = event_id;
+            this.hasalarm = hasalarm;
+            this.minutes = minutes;
         }
 
         public String getTitle() {
@@ -47,14 +49,55 @@ public class AgendaData {
             this.title = title;
         }
 
-        public String getTime() {
-            return time;
+        public String getDescription() {
+            return description;
         }
 
-        public void setTime(String time) {
-            this.time = time;
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public long getDtstart() {
+            return dtstart;
+        }
+
+        public void setDtstart(long dtstart) {
+            this.dtstart = dtstart;
+        }
+
+        public long getDtend() {
+            return dtend;
+        }
+
+        public void setDtend(long dtend) {
+            this.dtend = dtend;
+        }
+
+        public long getEvent_id() {
+            return event_id;
+        }
+
+        public void setEvent_id(long event_id) {
+            this.event_id = event_id;
+        }
+
+        public int getHasalarm() {
+            return hasalarm;
+        }
+
+        public void setHasalarm(int hasalarm) {
+            this.hasalarm = hasalarm;
+        }
+
+        public int getMinutes() {
+            return minutes;
+        }
+
+        public void setMinutes(int minutes) {
+            this.minutes = minutes;
         }
     }
+
 
     public String getYear() {
         return year;
@@ -88,19 +131,11 @@ public class AgendaData {
         this.week = week;
     }
 
-    public int getCount() {
-        return count;
+    public List<EventData> getEventDatas() {
+        return eventDatas;
     }
 
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    public List<AgendaInfoData> getAgendaInfoData() {
-        return agendaInfoData;
-    }
-
-    public void setAgendaInfoData(List<AgendaInfoData> agendaInfoData) {
-        this.agendaInfoData = agendaInfoData;
+    public void setEventDatas(List<EventData> eventDatas) {
+        this.eventDatas = eventDatas;
     }
 }
