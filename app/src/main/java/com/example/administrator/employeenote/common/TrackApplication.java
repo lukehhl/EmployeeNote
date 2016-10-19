@@ -19,6 +19,7 @@ public class TrackApplication extends Application {
     public static final String serverUrl = "http://10.30.100.22:8080/gesac/";
     private static Boolean exit;
     public static long serviceId = 122424;
+    public static String calendar_id;
     private String eid;
     private EmployeeData person;
     public static final LatLng tcenter = new LatLng(118.144916,24.703409);

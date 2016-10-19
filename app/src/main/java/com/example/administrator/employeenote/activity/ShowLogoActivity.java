@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 
 import com.example.administrator.employeenote.R;
+import com.example.administrator.employeenote.common.TestActivity;
 import com.example.administrator.employeenote.widget.LogoView;
+
+import junit.framework.Test;
 
 public class ShowLogoActivity extends AppCompatActivity {
     LogoView logoview;
@@ -32,7 +35,7 @@ public class ShowLogoActivity extends AppCompatActivity {
 //    }
 
     public void gotoMainActivity() {
-        Intent intent = new Intent(ShowLogoActivity.this, LoginActivity.class);
+        Intent intent = new Intent(ShowLogoActivity.this, TestActivity.class);
         startActivity(intent);
         finish();
     }
