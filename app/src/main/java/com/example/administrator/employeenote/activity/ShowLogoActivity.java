@@ -35,7 +35,7 @@ public class ShowLogoActivity extends AppCompatActivity {
 //    }
 
     public void gotoMainActivity() {
-        Intent intent = new Intent(ShowLogoActivity.this, TestActivity.class);
+        Intent intent = new Intent(ShowLogoActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();
     }

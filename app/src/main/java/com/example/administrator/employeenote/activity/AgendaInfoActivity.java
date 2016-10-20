@@ -17,6 +17,8 @@ import com.jzxiang.pickerview.listener.OnDateSetListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.example.administrator.employeenote.utils.DataUtils.getDateToString;
+
 public class AgendaInfoActivity extends AppCompatActivity {
     private TextView mstartime, mendtime, mtype;
     private EditText mremark, mtitle;
@@ -58,7 +60,7 @@ public class AgendaInfoActivity extends AppCompatActivity {
                         .setSureStringId("确认")
                         .setTitleStringId("选择时间")
                         .setCyclic(true)
-                        .setMinMillseconds(946656000)
+                        .setMinMillseconds(946656000*1000)
                         .setCurrentMillseconds(System.currentTimeMillis())
                         .setThemeColor(getResources().getColor(R.color.timepicker_dialog_bg))
                         .setType(Type.ALL)
@@ -124,9 +126,5 @@ public class AgendaInfoActivity extends AppCompatActivity {
 
     }
 
-    public String getDateToString(long time) {
-        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date d = new Date(time);
-        return sf.format(d);
-    }
+
 }

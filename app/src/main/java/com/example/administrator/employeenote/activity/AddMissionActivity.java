@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,12 +22,16 @@ import android.widget.Toast;
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.common.TrackApplication;
 import com.example.administrator.employeenote.utils.PlayerSingleton;
+import com.jzxiang.pickerview.TimePickerDialog;
+import com.jzxiang.pickerview.data.Type;
+import com.jzxiang.pickerview.listener.OnDateSetListener;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import dmax.dialog.SpotsDialog;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -40,10 +45,13 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 
+import static com.example.administrator.employeenote.utils.DataUtils.getDateToString;
+
 public class AddMissionActivity extends AppCompatActivity {
     private ImageView back;
-    private TextView submit;
+    private TextView submit, mtime;
     private Button svoice, pvoice, smisson;
+    private EditText mdes;
     private TrackApplication tapp;
 
     private MediaRecorder mRecorder;
@@ -52,8 +60,6 @@ public class AddMissionActivity extends AppCompatActivity {
     private String date;
 
     private Handler mhandler;
-    private Boolean retroSign = false;
-    private Boolean mapSign = false;
 
     private final String LOG_TAG = "AddMissionActivity";
 
@@ -71,17 +77,49 @@ public class AddMissionActivity extends AppCompatActivity {
         mhandler = new Handler(Looper.getMainLooper());
 
 
-
         back = (ImageView) findViewById(R.id.back);
         submit = (TextView) findViewById(R.id.submit);
         svoice = (Button) findViewById(R.id.startvoice);
         pvoice = (Button) findViewById(R.id.playvoice);
         smisson = (Button) findViewById(R.id.startmission);
+        mdes = (EditText) findViewById(R.id.descrip_ed);
+        mtime = (TextView) findViewById(R.id.time_tx);
+
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+
+        mtime.setText(getDateToString(System.currentTimeMillis()));
+        date = mtime.getText().toString();
+
+        mtime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TimePickerDialog tp = new TimePickerDialog.Builder()
+                        .setCallBack(new OnDateSetListener() {
+                            @Override
+                            public void onDateSet(TimePickerDialog timePickerView, long millseconds) {
+                                mtime.setText(getDateToString(millseconds));
+
+                            }
+                        })
+                        .setCancelStringId("取消")
+                        .setSureStringId("确认")
+                        .setTitleStringId("选择时间")
+                        .setCyclic(true)
+                        .setMinMillseconds(946656000)
+                        .setCurrentMillseconds(System.currentTimeMillis())
+                        .setThemeColor(getResources().getColor(R.color.timepicker_dialog_bg))
+                        .setType(Type.ALL)
+                        .setWheelItemTextNormalColor(getResources().getColor(R.color.timetimepicker_default_text_color))
+                        .setWheelItemTextSelectorColor(getResources().getColor(R.color.timepicker_toolbar_bg))
+                        .setWheelItemTextSize(12)
+                        .build();
+                tp.show(getSupportFragmentManager(), "all");
             }
         });
 
@@ -182,13 +220,8 @@ public class AddMissionActivity extends AppCompatActivity {
     }
 
     private void startVoice() {//开始录音
-
-        SimpleDateFormat sDateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        SimpleDateFormat sDateFormat2 = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-        date = sDateFormat1.format(new java.util.Date());
-        String filename = sDateFormat2.format(new Date());
-        mFileName = AddMissionActivity.this.getCacheDir().toString() + "/" + tapp.getEid() + "-" + filename + ".amr";
-
+        date = mtime.getText().toString() + ":00";
+        mFileName = AddMissionActivity.this.getCacheDir().toString() + "/" + tapp.getPerson().getEid() + "-" + System.currentTimeMillis()/1000 + ".amr";
         File directory = new File(mFileName).getParentFile();
         if (!directory.exists() && !directory.mkdirs()) {
             Log.i(LOG_TAG, "Path to file could not be created");
@@ -202,25 +235,28 @@ public class AddMissionActivity extends AppCompatActivity {
         try {
             mRecorder.prepare();
         } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
+            Log.e(LOG_TAG, "startVoice() failed");
         }
         mRecorder.start();
 
     }
 
-
-
     public interface FileUploadService { //retrofit上传文件接口
         @Multipart
         @POST("addMission.do")
         Call<ResponseBody> upload(@Part("eid") String eid,
+                                  @Part("vdes") String vdes,
                                   @Part("vtime") String vtime,
-                                  @Part("vsrc") RequestBody description,
+                                  @Part("vsrc") RequestBody src,
                                   @Part MultipartBody.Part file,
                                   @Part("vsign") String vsign);
     }
 
     public void initRetrofit() {
+
+        final AlertDialog loaddialog = new SpotsDialog(AddMissionActivity.this);
+        loaddialog.show();
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(tapp.SERVERURL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -234,15 +270,17 @@ public class AddMissionActivity extends AppCompatActivity {
         MultipartBody.Part body =
                 MultipartBody.Part.createFormData("voiceFile", file.getName(), requestFile);
         String descriptionString = file.getName();
-        RequestBody description = RequestBody.create(
+        RequestBody src = RequestBody.create(
                 MediaType.parse("multipart/form-data"), descriptionString);
-        Call<ResponseBody> call = service.upload(tapp.getEid(), date, description, body, "0");
+        String vdes = mdes.getText().toString();
+        Call<ResponseBody> call = service.upload(tapp.getPerson().getEid(), vdes, date, src, body, "2");
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call,
                                    Response<ResponseBody> response) {
                 if (response.isSuccessful()) { //上传成功
+                    loaddialog.cancel();
                     Toast.makeText(AddMissionActivity.this, "success", Toast.LENGTH_SHORT).show();
                     new AlertDialog.Builder(AddMissionActivity.this)
                             .setMessage("提交成功")
@@ -255,10 +293,10 @@ public class AddMissionActivity extends AppCompatActivity {
                                 }
                             })
                             .show();
-                    retroSign = true;
                 } else
                     try {
-                        Log.d("retrofit",response.errorBody().string());
+                        Log.d("retrofit", response.errorBody().string());
+                        Toast.makeText(AddMissionActivity.this, "出现错误" + response.errorBody().string(), Toast.LENGTH_SHORT).show();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -267,6 +305,7 @@ public class AddMissionActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 t.printStackTrace();
+
             }
         });
     }

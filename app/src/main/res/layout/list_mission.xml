@@ -22,6 +22,13 @@
             android:layout_marginTop="20dp"
             android:layout_toEndOf="@id/year"
             android:text="date" />
+        <TextView
+            android:id="@+id/customer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_toEndOf="@id/date"
+            android:text="customer" />
 
 
         <TextView
@@ -30,42 +37,48 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_marginTop="50dp"
-            android:text="zhuantai"
-            />
+            android:text="zhuantai" />
 
-        <Button
-            android:id="@+id/btn_play"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginTop="40dp"
-            android:text="播放录音" />
-        <Button
-            android:id="@+id/btn_delete"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginTop="40dp"
-            android:layout_toRightOf="@id/btn_play"
-            android:visibility="invisible"
-            android:enabled="false"
-            android:text="取消任务" />
-        <Button
-            android:id="@+id/btn_finish"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginTop="40dp"
-            android:layout_toRightOf="@id/btn_delete"
-            android:visibility="invisible"
-            android:enabled="false"
-            android:text="完成任务" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="80dp"
+            android:orientation="horizontal">
 
+            <Button
+                android:id="@+id/btn_play"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="查看任务" />
+
+            <Button
+                android:id="@+id/btn_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_toRightOf="@id/btn_play"
+                android:enabled="false"
+                android:text="取消任务"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/btn_finish"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_toRightOf="@id/btn_delete"
+                android:enabled="false"
+                android:text="完成任务"
+                android:visibility="invisible" />
+
+
+        </LinearLayout>
         <Button
             android:id="@+id/btn_review"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_alignParentRight="true"
-            android:visibility="invisible"
             android:enabled="false"
-            android:text="查看轨迹" />
+            android:text="查看轨迹"
+            android:visibility="invisible" />
     </RelativeLayout>
 
 

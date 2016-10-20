@@ -109,13 +109,15 @@ public class EmployeeActivity extends AppCompatActivity {
     }
 
     public void point2geo(RealLocationData real) {
-        point = new LatLng(real.getEntities().get(0).getRealtime_point().getLocation().get(0), real.getEntities().get(0).getRealtime_point().getLocation().get(1));
-        if (tapp.isInJM(point)) {
-            place = "集美厂区";
-        } else if (tapp.isInTA(point)) {
-            place = "同安厂区";
-        } else {
-            place = "外出";
+        if (real.getEntities() != null) {
+            point = new LatLng(real.getEntities().get(0).getRealtime_point().getLocation().get(0), real.getEntities().get(0).getRealtime_point().getLocation().get(1));
+            if (tapp.isInJM(point)) {
+                place = "集美厂区";
+            } else if (tapp.isInTA(point)) {
+                place = "同安厂区";
+            } else {
+                place = "外出";
+            }
         }
         melocal.setText(place);
     }

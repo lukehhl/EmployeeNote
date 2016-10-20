@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.baidu.mapapi.model.LatLng;
 import com.example.administrator.employeenote.R;
@@ -47,8 +48,6 @@ public class EmployeeListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employeelist);
-
-
         initView();
     }
 
@@ -107,7 +106,7 @@ public class EmployeeListActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         employeeGetIF employeeGetIF = retrofit.create(employeeGetIF.class);
-        Call<List<EmployeeData>> call = employeeGetIF.getEmployee(tapp.getEid(),
+        Call<List<EmployeeData>> call = employeeGetIF.getEmployee(tapp.getPerson().getEid(),
                 method);
 
         call.enqueue(new Callback<List<EmployeeData>>() {
@@ -116,8 +115,6 @@ public class EmployeeListActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     elist = response.body();
                     initRetrofitreal();
-//                    findLocationAtTime(elist);
-                    Log.d(TAG, "succeed");
 
                 } else {
                     try {
@@ -164,8 +161,8 @@ public class EmployeeListActivity extends AppCompatActivity {
                 entityNames += elist.get(i).getEid();
             else entityNames += elist.get(i).getEid() + ",";
         }
-        Call<RealLocationData> call = realLocGetIF.getrealLoc("kAq1Mi2NFQT3WUFs7tUQWhjGCEmG38rF",tapp.serviceId,entityNames,
-                1,0,1,1000,"C0:99:6C:50:5D:24:E7:CB:5E:72:37:84:5D:DB:50:BB:35:7F:7F:3D;com.example.administrator.employeenote");
+        Call<RealLocationData> call = realLocGetIF.getrealLoc("kAq1Mi2NFQT3WUFs7tUQWhjGCEmG38rF", tapp.serviceId, entityNames,
+                1, 0, 1, 1000, "82:C7:11:19:17:AB:4E:B3:AA:D7:2F:FA:46:F8:0F:CB:DF:83:AD:46;com.example.administrator.employeenote");
 
         call.enqueue(new Callback<RealLocationData>() {
             @Override
@@ -178,7 +175,7 @@ public class EmployeeListActivity extends AppCompatActivity {
                     Log.d(TAG, new Gson().toJson(realData));
                 } else {
                     try {
-                        Log.d(TAG, response.errorBody().string());
+                        Toast.makeText(EmployeeListActivity.this, response.errorBody().string(), Toast.LENGTH_LONG).show();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -189,22 +186,22 @@ public class EmployeeListActivity extends AppCompatActivity {
             public void onFailure(Call<RealLocationData> call, Throwable t) {
                 Log.d(TAG, t.toString());
             }
-
-
         });
     }
 
-    private void setLoc(){
+    private void setLoc() {
         for (int i = 0; i < elist.size(); i++) {
-            for (int j = 0; j < realData.getEntities().size(); j++) {
-                if (elist.get(i).getEid().equals(realData.getEntities().get(j).getEntity_name())) {
-                    LatLng point = new LatLng(realData.getEntities().get(j).getRealtime_point().getLocation().get(0), realData.getEntities().get(j).getRealtime_point().getLocation().get(1));
-                    if (tapp.isInJM(point)) {
-                        elist.get(i).setElocal("集美厂区");
-                    } else if (tapp.isInTA(point)) {
-                        elist.get(i).setElocal("同安厂区");
-                    } else {
-                        elist.get(i).setElocal("外出");
+            if (realData.getEntities()!=null) {
+                for (int j = 0; j < realData.getEntities().size(); j++) {
+                    if (elist.get(i).getEid().equals(realData.getEntities().get(j).getEntity_name())) {
+                        LatLng point = new LatLng(realData.getEntities().get(j).getRealtime_point().getLocation().get(0), realData.getEntities().get(j).getRealtime_point().getLocation().get(1));
+                        if (tapp.isInJM(point)) {
+                            elist.get(i).setElocal("集美厂区");
+                        } else if (tapp.isInTA(point)) {
+                            elist.get(i).setElocal("同安厂区");
+                        } else {
+                            elist.get(i).setElocal("外出");
+                        }
                     }
                 }
             }

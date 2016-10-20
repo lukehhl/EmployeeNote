@@ -19,7 +19,6 @@ import com.baidu.trace.Trace;
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.common.TrackApplication;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,9 +30,9 @@ public class HomePageActivity extends AppCompatActivity {
     private List<Map<String, Object>> data_list;
     private SimpleAdapter sim_adapter;
     // 图片封装为一个数组
-    private int[] icon = {R.drawable.homeperson, R.drawable.homeperson,
-            R.drawable.homemission, R.drawable.homesetup};
-    private String[] iconName = {"我的上级", "我的下属", "我的行程", "设置"};
+    private int[] icon = {R.mipmap.homeperson, R.mipmap.homeperson,
+            R.mipmap.homemission, R.mipmap.homesetup, R.mipmap.homemission};
+    private String[] iconName = {"我的上级", "我的下属", "我的行程", "设置", "日程"};
     private TrackApplication tapp;
 
     /**
@@ -100,6 +99,9 @@ public class HomePageActivity extends AppCompatActivity {
                     case 3:
                         goToAttract("setup", SetUpActivity.class);
                         break;
+                    case 4:
+                        goToAttract("calendar", CalendarActivity.class);
+                        break;
                 }
             }
         });
@@ -110,6 +112,7 @@ public class HomePageActivity extends AppCompatActivity {
     public void goToAttract(String type, Class<?> cls) {
         Intent intent = new Intent(this, cls);
         intent.putExtra("type", type);
+        intent.putExtra("eid",tapp.getPerson().getEid());
         startActivity(intent);
 
     }
@@ -143,7 +146,7 @@ public class HomePageActivity extends AppCompatActivity {
 
     private void startMap() {
         //实例名称
-        entityName = tapp.getEid();
+        entityName = tapp.getPerson().getEid();
         //实例化轨迹服务客户端
         client = new LBSTraceClient(getApplicationContext());
         //实例化轨迹服务
@@ -195,7 +198,6 @@ public class HomePageActivity extends AppCompatActivity {
                         .setMessage("停止失败")
                         .setPositiveButton("确定", null)
                         .show();
-
             }
         };
         client.stopTrace(trace, onStopTraceListener);

@@ -20,7 +20,6 @@ public class TrackApplication extends Application {
     private static Boolean exit;
     public static long serviceId = 122424;
     public static String calendar_id = "";
-    private String eid;
     private EmployeeData person;
     public static final LatLng TCENTER = new LatLng(118.144916,24.703409);
     public static final int TRADIUS = 10;
@@ -33,7 +32,6 @@ public class TrackApplication extends Application {
         SDKInitializer.initialize(getApplicationContext());
         context = getApplicationContext();
         exit = false;
-        eid = "8";
     }
 
     public EmployeeData getPerson() {
@@ -42,14 +40,6 @@ public class TrackApplication extends Application {
 
     public void setPerson(EmployeeData person) {
         this.person = person;
-    }
-
-    public String getEid() {
-        return eid;
-    }
-
-    public void setEid(String eid) {
-        this.eid = eid;
     }
 
     public static Context getContext() {

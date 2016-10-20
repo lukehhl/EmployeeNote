@@ -98,7 +98,7 @@ public class LoginActivity extends AppCompatActivity {
                     et.putString("password", password);
                 } else et.clear();
                 et.commit();
-                tapp.setPerson(new EmployeeData("3","ge11533","黄海龙2","系统应用专员","企业管理部","b","b"));
+                tapp.setPerson(new EmployeeData("8","ge00001","黄海龙7","系统应用专员","企业管理部","w","w"));
                 Intent intent = new Intent(LoginActivity.this, HomePageActivity.class);
                 startActivity(intent);
                 finish();

@@ -1,23 +1,14 @@
 package com.example.administrator.employeenote.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.baidu.mapapi.model.LatLng;
-import com.baidu.trace.OnEntityListener;
 import com.example.administrator.employeenote.R;
-import com.example.administrator.employeenote.activity.EmployeeListActivity;
-import com.example.administrator.employeenote.activity.HomePageActivity;
-import com.example.administrator.employeenote.common.TrackApplication;
 import com.example.administrator.employeenote.entity.EmployeeData;
-import com.example.administrator.employeenote.entity.RealLocationData;
-import com.example.administrator.employeenote.entity.VoiceData;
-import com.example.administrator.employeenote.utils.GsonService;
 
 import java.util.List;
 

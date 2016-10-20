@@ -16,7 +16,7 @@
             android:id="@+id/epic"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:src="@drawable/person"
+            android:src="@mipmap/person"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true" />
         <TextView
@@ -46,10 +46,6 @@
             android:layout_toRightOf="@id/date"
             android:text="时间"
             />
-
-
-
-
     </RelativeLayout>
 
     <GridView

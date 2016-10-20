@@ -17,7 +17,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentStart="true"
             android:padding="12dp"
-            android:src="@drawable/btn_backarrow" />
+            android:src="@mipmap/btn_backarrow" />
 
         <TextView
             android:layout_width="wrap_content"

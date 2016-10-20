@@ -34,4 +34,6 @@ dependencies {
     compile 'com.github.tibolte:agendacalendarview:1.0.4'
     compile project(':CalendarComponent')
     compile 'com.jzxiang.pickerview:TimePickerDialog:1.0.1'
+    compile 'com.rengwuxian.materialedittext:library:2.1.4'
+    compile 'com.github.d-max:spots-dialog:0.7@aar'
 }

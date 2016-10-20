@@ -19,7 +19,7 @@ public class LogoView extends View implements Runnable {
     public LogoView(Context context) {
         super(context);
         showlogoactivity = (ShowLogoActivity) context;
-        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gesaclogo);
+        bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.gesaclogo);
         bitmap = Bitmap.createScaledBitmap(bitmap, ShowLogoActivity.width, ShowLogoActivity.height, true);
         new Thread(this).start();
 

@@ -36,9 +36,9 @@
     <uses-permission android:name="android.permission.GET_TASKS" />
     <!-- 录音权限 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <!--日历读写权限-->
-    <uses-permission android:name="android.permission.READ_CALENDAR"/>
-    <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
+    <!-- 日历读写权限 -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
     <application
         android:name=".common.TrackApplication"
@@ -77,7 +77,8 @@
         <activity android:name=".activity.SetUpActivity" />
         <activity android:name=".activity.DrawTraceActivity" />
         <activity android:name=".activity.CalendarActivity" />
-        <activity android:name=".activity.AgendaInfoActivity"></activity>
+        <activity android:name=".activity.AgendaInfoActivity" />
+        <activity android:name=".activity.UpdMissionActivity"></activity>
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package com.example.administrator.employeenote.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -15,7 +16,7 @@ import android.widget.Toast;
 
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.activity.DrawMapActivity;
-import com.example.administrator.employeenote.entity.VoiceData;
+import com.example.administrator.employeenote.entity.MissionData;
 import com.example.administrator.employeenote.utils.PlayerSingleton;
 
 import java.io.File;
@@ -26,6 +27,7 @@ import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.List;
 
+import dmax.dialog.SpotsDialog;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -48,11 +50,11 @@ public class MissionAdapter extends BaseAdapter {
     private String delSign = null;
     private String finSign = null;
 
-    public List<VoiceData> data;
+    public List<MissionData> data;
     private LayoutInflater mInflater;
     private Context context;
 
-    public MissionAdapter(Context context, List<VoiceData> data) {
+    public MissionAdapter(Context context, List<MissionData> data) {
         this.context = context;
         this.data = data;
         mInflater = LayoutInflater.from(context);
@@ -110,7 +112,7 @@ public class MissionAdapter extends BaseAdapter {
             hold.finishView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    initFinMission(String.valueOf(data.get(position).getVid()), position);
+                    initUpdMistate(String.valueOf(data.get(position).getVid()), position, 1);
                 }
             });
             hold.stateView.setText("进行中");
@@ -122,6 +124,8 @@ public class MissionAdapter extends BaseAdapter {
             hold.finishView.setVisibility(View.INVISIBLE);
             hold.traceView.setEnabled(true);
             hold.traceView.setVisibility(View.VISIBLE);
+            hold.traceView.setText("查看路线");
+
 
             hold.traceView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -144,6 +148,24 @@ public class MissionAdapter extends BaseAdapter {
             hold.stateView.setText("已完成");
             hold.stateView.setTextColor(convertView.getResources().getColor(R.color.green));
 
+        } else if (data.get(position).getVsign() == 2) { //计划中的任务
+            hold.delView.setEnabled(false);
+            hold.delView.setVisibility(View.INVISIBLE);
+            hold.finishView.setEnabled(false);
+            hold.finishView.setVisibility(View.INVISIBLE);
+            hold.traceView.setEnabled(true);
+            hold.traceView.setVisibility(View.VISIBLE);
+
+            hold.traceView.setText("开始任务");
+
+            hold.traceView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    initUpdMistate(String.valueOf(data.get(position).getVid()), position, 0);
+                }
+            });
+            hold.stateView.setText("计划中");
+            hold.stateView.setTextColor(convertView.getResources().getColor(R.color.blue_selected));
         }
 
         return convertView;
@@ -159,14 +181,15 @@ public class MissionAdapter extends BaseAdapter {
         Call<ResponseBody> delMission(@Query("vid") String vid);
     }
 
-    private interface finMissionIF {
-        @GET("finMission.do")
-        Call<ResponseBody> finMission(@Query("vid") String vid);
+    private interface updMistateIF {
+        @GET("updMissionState.do")
+        Call<ResponseBody> updMistate(@Query("vid") String vid,
+                                      @Query("state") String state);
     }
 
     private void initGetVoice(String url, final String filename) {
-        Log.d(TAG, url);
-
+        final AlertDialog loaddialog = new SpotsDialog(context);
+        loaddialog.show();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(SERVERURL)
                 .build();
@@ -183,6 +206,7 @@ public class MissionAdapter extends BaseAdapter {
                     Log.d(TAG, "server contacted and has file");
                     boolean writtenToDisk = writeResponseBodyToDisk(response.body(), filename);
                     Log.d(TAG, "file download was a success? " + writtenToDisk);
+                    loaddialog.dismiss();
                 } else {
                     Log.d(TAG, "server contact failed");
                 }
@@ -196,7 +220,8 @@ public class MissionAdapter extends BaseAdapter {
     }
 
     private void initDelMission(String vid, final int position) {
-
+        final AlertDialog loaddialog = new SpotsDialog(context);
+        loaddialog.show();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(SERVERURL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -213,6 +238,7 @@ public class MissionAdapter extends BaseAdapter {
                         Toast.makeText(context, delSign, Toast.LENGTH_SHORT).show();
                         data.remove(position);
                         notifyDataSetChanged();
+                        loaddialog.dismiss();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -236,14 +262,15 @@ public class MissionAdapter extends BaseAdapter {
         });
     }
 
-    private void initFinMission(String vid, final int position) {
-
+    private void initUpdMistate(String vid, final int position, final int state) {
+        final AlertDialog loaddialog = new SpotsDialog(context);
+        loaddialog.show();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(SERVERURL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        finMissionIF finmissionIF = retrofit.create(finMissionIF.class);
-        Call<ResponseBody> call = finmissionIF.finMission(vid);
+        updMistateIF finmissionIF = retrofit.create(updMistateIF.class);
+        Call<ResponseBody> call = finmissionIF.updMistate(vid, String.valueOf(state));
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -251,17 +278,17 @@ public class MissionAdapter extends BaseAdapter {
                 if (response.isSuccessful()) {
                     try {
                         finSign = response.body().string();
-                        Toast.makeText(context, finSign, Toast.LENGTH_SHORT).show();
-                        data.get(position).setVsign(1);
+                        data.get(position).setVsign(state);
                         notifyDataSetChanged();
+                        loaddialog.dismiss();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    Log.d(TAG, "finish succeed");
+                    Log.d(TAG, "upd succeed");
                 } else {
                     try {
                         Log.d(TAG, response.errorBody().string());
-                        Toast.makeText(context, response.errorBody().string(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, response.errorBody().string(), Toast.LENGTH_LONG).show();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

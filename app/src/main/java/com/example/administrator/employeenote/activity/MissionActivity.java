@@ -1,5 +1,6 @@
 package com.example.administrator.employeenote.activity;
 
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +14,7 @@ import android.widget.Toast;
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.adapter.MissionAdapter;
 import com.example.administrator.employeenote.common.TrackApplication;
-import com.example.administrator.employeenote.entity.VoiceData;
+import com.example.administrator.employeenote.entity.MissionData;
 
 import java.io.IOException;
 import java.util.List;
@@ -35,8 +36,9 @@ public class MissionActivity extends AppCompatActivity{
     private TrackApplication tapp;
     public static Handler handler;
     private MissionAdapter adapter;
+    private String eid;
 
-    private List<VoiceData> vlist;
+    private List<MissionData> vlist;
     private Boolean retrofitSign = false;
 
     @Override
@@ -52,6 +54,8 @@ public class MissionActivity extends AppCompatActivity{
         tapp = (TrackApplication) getApplication();
         handler = new Handler(Looper.getMainLooper());
 
+        Intent it = getIntent();
+        eid = it.getStringExtra("eid");
 
         back = (ImageView) findViewById(R.id.back);
         refresh = (ImageView) findViewById(R.id.refresh);
@@ -80,7 +84,7 @@ public class MissionActivity extends AppCompatActivity{
 
     public interface missionGetIF {
         @GET("getMission.do")
-        Call<List<VoiceData>> getMission(@Query("eid") String id);
+        Call<List<MissionData>> getMission(@Query("eid") String id);
     }
 
     public void initMission() {
@@ -89,11 +93,11 @@ public class MissionActivity extends AppCompatActivity{
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         missionGetIF missionGetIF = retrofit.create(missionGetIF.class);
-        Call<List<VoiceData>> call = missionGetIF.getMission(tapp.getEid());
+        Call<List<MissionData>> call = missionGetIF.getMission(eid);
 
-        call.enqueue(new Callback<List<VoiceData>>() {
+        call.enqueue(new Callback<List<MissionData>>() {
             @Override
-            public void onResponse(Call<List<VoiceData>> call, Response<List<VoiceData>> response) {
+            public void onResponse(Call<List<MissionData>> call, Response<List<MissionData>> response) {
                 if (response.isSuccessful()) {
                     vlist = response.body();
                     adapter = new MissionAdapter(MissionActivity.this, vlist);
@@ -111,7 +115,7 @@ public class MissionActivity extends AppCompatActivity{
             }
 
             @Override
-            public void onFailure(Call<List<VoiceData>> call, Throwable t) {
+            public void onFailure(Call<List<MissionData>> call, Throwable t) {
                 Log.d(TAG, t.toString());
             }
         });

@@ -10,6 +10,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_gravity="center_vertical"
+        android:visibility="invisible"
         android:background="@mipmap/left_arrow"/>
     <TextView
         android:id="@+id/year"
@@ -33,5 +34,6 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_gravity="center_vertical"
+        android:visibility="invisible"
         android:background="@mipmap/right_arrow"/>
 </LinearLayout>
