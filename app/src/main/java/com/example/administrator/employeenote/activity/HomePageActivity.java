@@ -65,7 +65,7 @@ public class HomePageActivity extends AppCompatActivity {
         mename = (TextView) findViewById(R.id.ename);
         mdate = (TextView) findViewById(R.id.date);
         mweekdate = (TextView) findViewById(R.id.weekdate);
-        mename.setText(tapp.getPerson().getEname());
+//        mename.setText(tapp.getPerson().getEname());
 
         startMap();
 

@@ -16,8 +16,11 @@ import android.widget.Toast;
 
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.activity.DrawMapActivity;
+import com.example.administrator.employeenote.activity.MissionActivity;
+import com.example.administrator.employeenote.activity.MissionInfoActivity;
 import com.example.administrator.employeenote.entity.MissionData;
 import com.example.administrator.employeenote.utils.PlayerSingleton;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -49,6 +52,7 @@ public class MissionAdapter extends BaseAdapter {
     private static final String TAG = "missionadapter";
     private String delSign = null;
     private String finSign = null;
+    private AlertDialog loaddialog;
 
     public List<MissionData> data;
     private LayoutInflater mInflater;
@@ -69,7 +73,8 @@ public class MissionAdapter extends BaseAdapter {
             convertView = mInflater.inflate(R.layout.list_mission, null);
             hold.yearView = (TextView) convertView.findViewById(R.id.year);
             hold.dateView = (TextView) convertView.findViewById(R.id.date);
-            hold.playView = (Button) convertView.findViewById(R.id.btn_play);
+            hold.customerView = (TextView) convertView.findViewById(R.id.customer);
+            hold.findView = (Button) convertView.findViewById(R.id.btn_find);
             hold.delView = (Button) convertView.findViewById(R.id.btn_delete);
             hold.finishView = (Button) convertView.findViewById(R.id.btn_finish);
             hold.traceView = (Button) convertView.findViewById(R.id.btn_review);
@@ -81,16 +86,15 @@ public class MissionAdapter extends BaseAdapter {
 
         hold.yearView.setText(data.get(position).getVtime().toString().substring(0, 4) + "年");
         hold.dateView.setText(data.get(position).getVtime().toString().substring(5, 16).replace('-', '月').replace(' ', '日'));
-        hold.playView.setOnClickListener(new View.OnClickListener() {
+        hold.findView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String fname = data.get(position).getVsrc().replaceAll("voice/", "");
-                if (!fileIsExists(fname))
-                    initGetVoice(data.get(position).getVsrc(),
-                            fname);
-                else playVoice(fname);
+                Intent it = new Intent(context, MissionInfoActivity.class);
+                it.putExtra("missiondata", new Gson().toJson(data.get(position)));
+                context.startActivity(it);
             }
         });
+        hold.customerView.setText(data.get(position).getVcustomer());
         if (data.get(position).getVsign() == 0) { //进行中的任务
 
             hold.delView.setEnabled(true);
@@ -171,11 +175,6 @@ public class MissionAdapter extends BaseAdapter {
         return convertView;
     }
 
-    private interface getVoiceIF {
-        @GET
-        Call<ResponseBody> getVoice(@Url String fileUrl);
-    }
-
     private interface delVoiceIF {
         @GET("delMission.do")
         Call<ResponseBody> delMission(@Query("vid") String vid);
@@ -185,38 +184,6 @@ public class MissionAdapter extends BaseAdapter {
         @GET("updMissionState.do")
         Call<ResponseBody> updMistate(@Query("vid") String vid,
                                       @Query("state") String state);
-    }
-
-    private void initGetVoice(String url, final String filename) {
-        final AlertDialog loaddialog = new SpotsDialog(context);
-        loaddialog.show();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(SERVERURL)
-                .build();
-
-
-        getVoiceIF downloadService = retrofit.create(getVoiceIF.class);
-
-        Call<ResponseBody> call = downloadService.getVoice(url);
-
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    Log.d(TAG, "server contacted and has file");
-                    boolean writtenToDisk = writeResponseBodyToDisk(response.body(), filename);
-                    Log.d(TAG, "file download was a success? " + writtenToDisk);
-                    loaddialog.dismiss();
-                } else {
-                    Log.d(TAG, "server contact failed");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e(TAG, t.toString());
-            }
-        });
     }
 
     private void initDelMission(String vid, final int position) {
@@ -305,69 +272,7 @@ public class MissionAdapter extends BaseAdapter {
         });
     }
 
-    private boolean writeResponseBodyToDisk(ResponseBody body, String filename) {
-        try {
-            // todo change the file location/name according to your needs
-            File futureStudioIconFile = new File(context.getCacheDir() + File.separator + filename);
 
-            InputStream inputStream = null;
-            OutputStream outputStream = null;
-
-            try {
-                byte[] fileReader = new byte[4096];
-
-                long fileSize = body.contentLength();
-                long fileSizeDownloaded = 0;
-
-                inputStream = body.byteStream();
-                outputStream = new FileOutputStream(futureStudioIconFile);
-
-                while (true) {
-                    int read = inputStream.read(fileReader);
-
-                    if (read == -1) {
-                        break;
-                    }
-
-                    outputStream.write(fileReader, 0, read);
-
-                    fileSizeDownloaded += read;
-
-                    Log.d(TAG, "file download: " + fileSizeDownloaded + " of " + fileSize);
-                }
-
-                outputStream.flush();
-                playVoice(filename);
-                return true;
-            } catch (IOException e) {
-                return false;
-            } finally {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-
-                if (outputStream != null) {
-                    outputStream.close();
-                }
-            }
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
-    public boolean fileIsExists(String filename) {
-        try {
-            File f = new File(context.getCacheDir() + File.separator + filename);
-            if (!f.exists()) {
-                return false;
-            }
-
-        } catch (Exception e) {
-            // TODO: handle exception
-            return false;
-        }
-        return true;
-    }
 
     private void playVoice(String filename) {
         try {
@@ -384,8 +289,8 @@ public class MissionAdapter extends BaseAdapter {
 
     class ViewHold {
         //public ImageView image;
-        public TextView yearView, dateView, stateView;
-        public Button playView, delView, traceView, finishView;
+        public TextView yearView, dateView, stateView, customerView;
+        public Button findView, delView, traceView, finishView;
     }
 
     @Override

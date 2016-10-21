@@ -25,6 +25,7 @@ import com.example.administrator.employeenote.utils.PlayerSingleton;
 import com.jzxiang.pickerview.TimePickerDialog;
 import com.jzxiang.pickerview.data.Type;
 import com.jzxiang.pickerview.listener.OnDateSetListener;
+import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +52,7 @@ public class AddMissionActivity extends AppCompatActivity {
     private ImageView back;
     private TextView submit, mtime;
     private Button svoice, pvoice, smisson;
-    private EditText mdes;
+    private MaterialEditText mdes, mcustomer;
     private TrackApplication tapp;
 
     private MediaRecorder mRecorder;
@@ -81,9 +82,9 @@ public class AddMissionActivity extends AppCompatActivity {
         submit = (TextView) findViewById(R.id.submit);
         svoice = (Button) findViewById(R.id.startvoice);
         pvoice = (Button) findViewById(R.id.playvoice);
-        smisson = (Button) findViewById(R.id.startmission);
-        mdes = (EditText) findViewById(R.id.descrip_ed);
+        mdes = (MaterialEditText) findViewById(R.id.descrip_ed);
         mtime = (TextView) findViewById(R.id.time_tx);
+        mcustomer = (MaterialEditText) findViewById(R.id.customer_ed);
 
 
         back.setOnClickListener(new View.OnClickListener() {
@@ -104,7 +105,6 @@ public class AddMissionActivity extends AppCompatActivity {
                             @Override
                             public void onDateSet(TimePickerDialog timePickerView, long millseconds) {
                                 mtime.setText(getDateToString(millseconds));
-
                             }
                         })
                         .setCancelStringId("取消")
@@ -193,12 +193,7 @@ public class AddMissionActivity extends AppCompatActivity {
         mRecorder.release();
         mRecorder = null;
         Toast.makeText(getApplicationContext(), "保存录音" + mFileName, Toast.LENGTH_SHORT).show();
-        mhandler.post(new Runnable() {
-            @Override
-            public void run() {
-                svoice.setText("重新录音");
-            }
-        });
+        svoice.setText("重新录音");
         svoice.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -220,14 +215,15 @@ public class AddMissionActivity extends AppCompatActivity {
     }
 
     private void startVoice() {//开始录音
+        mRecorder = new MediaRecorder();
         date = mtime.getText().toString() + ":00";
-        mFileName = AddMissionActivity.this.getCacheDir().toString() + "/" + tapp.getPerson().getEid() + "-" + System.currentTimeMillis()/1000 + ".amr";
+        mFileName = AddMissionActivity.this.getCacheDir().toString() + "/" + tapp.getPerson().getEid() + "-" + System.currentTimeMillis() / 1000 + ".amr";
         File directory = new File(mFileName).getParentFile();
         if (!directory.exists() && !directory.mkdirs()) {
             Log.i(LOG_TAG, "Path to file could not be created");
         }
         Toast.makeText(getApplicationContext(), "按住开始录音,松开结束录音", Toast.LENGTH_SHORT).show();
-        mRecorder = new MediaRecorder();
+
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
@@ -249,7 +245,8 @@ public class AddMissionActivity extends AppCompatActivity {
                                   @Part("vtime") String vtime,
                                   @Part("vsrc") RequestBody src,
                                   @Part MultipartBody.Part file,
-                                  @Part("vsign") String vsign);
+                                  @Part("vsign") String vsign,
+                                  @Part("vcustomer") String vcustomer);
     }
 
     public void initRetrofit() {
@@ -272,8 +269,9 @@ public class AddMissionActivity extends AppCompatActivity {
         String descriptionString = file.getName();
         RequestBody src = RequestBody.create(
                 MediaType.parse("multipart/form-data"), descriptionString);
-        String vdes = mdes.getText().toString();
-        Call<ResponseBody> call = service.upload(tapp.getPerson().getEid(), vdes, date, src, body, "2");
+        String vdes = mdes.getText().toString() + "";
+        String vcustomer = mcustomer.getText().toString() + "";
+        Call<ResponseBody> call = service.upload(tapp.getPerson().getEid(), vdes, date, src, body, "2", vcustomer);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -288,6 +286,7 @@ public class AddMissionActivity extends AppCompatActivity {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     Intent it = new Intent(AddMissionActivity.this, MissionActivity.class);
+                                    it.putExtra("eid",tapp.getPerson().getEid());
                                     startActivity(it);
                                     finish();
                                 }

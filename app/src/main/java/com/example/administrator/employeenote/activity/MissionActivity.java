@@ -27,7 +27,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-public class MissionActivity extends AppCompatActivity{
+public class MissionActivity extends AppCompatActivity {
     private static final String TAG = "retrofit";
     private ImageView back, refresh;
     private ListView mlist;
@@ -80,8 +80,6 @@ public class MissionActivity extends AppCompatActivity{
 
     }
 
-
-
     public interface missionGetIF {
         @GET("getMission.do")
         Call<List<MissionData>> getMission(@Query("eid") String id);
@@ -121,4 +119,12 @@ public class MissionActivity extends AppCompatActivity{
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (vlist != null) {
+            vlist.clear();
+            initMission();
+        }
+    }
 }
