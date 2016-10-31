@@ -22,12 +22,10 @@ import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.trace.LBSTraceClient;
 import com.baidu.trace.OnTrackListener;
-import com.baidu.trace.Trace;
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.common.TrackApplication;
-import com.example.administrator.employeenote.entity.getHistory.HistoryTrackData;
+import com.example.administrator.employeenote.entity.HistoryTrackData;
 import com.example.administrator.employeenote.utils.GsonService;
 
 import org.json.JSONException;
@@ -103,7 +101,7 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
 
         btnReplay = (Button) findViewById(R.id.btn_replay);
         btnPause = (Button) findViewById(R.id.btn_pause);
-        btnPlay = (Button) findViewById(R.id.btn_play);
+        btnPlay = (Button) findViewById(R.id.btn_find);
 
 
         btnReplay.setOnClickListener(this);
@@ -185,7 +183,7 @@ public class DrawTraceActivity extends Activity implements View.OnClickListener 
     public void onClick(View v) {
         // TODO Auto-generated method stub
         switch (v.getId()) {
-            case R.id.btn_play:
+            case R.id.btn_find:
                 // 查询轨迹
                 queryTrack();
                 btnReplay.setEnabled(true);

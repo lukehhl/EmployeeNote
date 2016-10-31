@@ -15,6 +15,7 @@ import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.adapter.MissionAdapter;
 import com.example.administrator.employeenote.common.TrackApplication;
 import com.example.administrator.employeenote.entity.MissionData;
+import com.example.administrator.employeenote.utils.LoadDialog;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,7 +37,7 @@ public class MissionActivity extends AppCompatActivity {
     private TrackApplication tapp;
     public static Handler handler;
     private MissionAdapter adapter;
-    private String eid;
+    public static String eid;
 
     private List<MissionData> vlist;
     private Boolean retrofitSign = false;
@@ -86,6 +87,7 @@ public class MissionActivity extends AppCompatActivity {
     }
 
     public void initMission() {
+        LoadDialog.showDialog(this);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(tapp.SERVERURL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -100,6 +102,7 @@ public class MissionActivity extends AppCompatActivity {
                     vlist = response.body();
                     adapter = new MissionAdapter(MissionActivity.this, vlist);
                     mlist.setAdapter(adapter);
+                    LoadDialog.cancelDialog();
                     Toast.makeText(getApplicationContext(), "getlist success", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "succeed");
                 } else {

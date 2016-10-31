@@ -19,8 +19,9 @@ import com.baidu.mapapi.model.LatLngBounds;
 import com.baidu.trace.OnTrackListener;
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.common.TrackApplication;
-import com.example.administrator.employeenote.entity.getHistory.HistoryTrackData;
+import com.example.administrator.employeenote.entity.HistoryTrackData;
 import com.example.administrator.employeenote.utils.GsonService;
+import com.example.administrator.employeenote.utils.LoadDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -93,6 +94,7 @@ public class DrawMapActivity extends Activity {
      * 初始化
      */
     private void init() {
+        LoadDialog.showDialog(this);
         tapp = (TrackApplication) getApplication();
 
         tvDatetime = (TextView) findViewById(R.id.tv_datetime);
@@ -221,6 +223,7 @@ public class DrawMapActivity extends Activity {
      * @param points
      */
     private void drawHistoryTrack(final List<LatLng> points, final double distance) {
+        LoadDialog.cancelDialog();
         // 绘制新覆盖物前，清空之前的覆盖物
         mBaiduMap.clear();
 

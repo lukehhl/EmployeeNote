@@ -19,6 +19,7 @@ import com.example.administrator.employeenote.activity.DrawMapActivity;
 import com.example.administrator.employeenote.activity.MissionActivity;
 import com.example.administrator.employeenote.activity.MissionInfoActivity;
 import com.example.administrator.employeenote.entity.MissionData;
+import com.example.administrator.employeenote.utils.LoadDialog;
 import com.example.administrator.employeenote.utils.PlayerSingleton;
 import com.google.gson.Gson;
 
@@ -91,6 +92,7 @@ public class MissionAdapter extends BaseAdapter {
             public void onClick(View v) {
                 Intent it = new Intent(context, MissionInfoActivity.class);
                 it.putExtra("missiondata", new Gson().toJson(data.get(position)));
+                it.putExtra("eid", MissionActivity.eid);
                 context.startActivity(it);
             }
         });
@@ -187,8 +189,7 @@ public class MissionAdapter extends BaseAdapter {
     }
 
     private void initDelMission(String vid, final int position) {
-        final AlertDialog loaddialog = new SpotsDialog(context);
-        loaddialog.show();
+        LoadDialog.showDialog(context);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(SERVERURL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -205,7 +206,7 @@ public class MissionAdapter extends BaseAdapter {
                         Toast.makeText(context, delSign, Toast.LENGTH_SHORT).show();
                         data.remove(position);
                         notifyDataSetChanged();
-                        loaddialog.dismiss();
+                        LoadDialog.cancelDialog();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -230,8 +231,7 @@ public class MissionAdapter extends BaseAdapter {
     }
 
     private void initUpdMistate(String vid, final int position, final int state) {
-        final AlertDialog loaddialog = new SpotsDialog(context);
-        loaddialog.show();
+        LoadDialog.showDialog(context);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(SERVERURL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -247,7 +247,7 @@ public class MissionAdapter extends BaseAdapter {
                         finSign = response.body().string();
                         data.get(position).setVsign(state);
                         notifyDataSetChanged();
-                        loaddialog.dismiss();
+                        LoadDialog.cancelDialog();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -274,18 +274,6 @@ public class MissionAdapter extends BaseAdapter {
 
 
 
-    private void playVoice(String filename) {
-        try {
-            MediaPlayer mPlayer = PlayerSingleton.getInstance(context, Uri.parse(context.getCacheDir() + File.separator + filename));
-            mPlayer.reset();
-            mPlayer.setDataSource(context.getCacheDir() + File.separator + filename);
-            mPlayer.prepare();
-            mPlayer.start();
-            Log.d(TAG, "开始播放");
-        } catch (IOException e) {
-            Log.d(TAG, "播放失败");
-        }
-    }
 
     class ViewHold {
         //public ImageView image;

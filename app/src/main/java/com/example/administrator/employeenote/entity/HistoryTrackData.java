@@ -1,4 +1,4 @@
-package com.example.administrator.employeenote.entity.getHistory;
+package com.example.administrator.employeenote.entity;
 
 import android.util.Log;
 

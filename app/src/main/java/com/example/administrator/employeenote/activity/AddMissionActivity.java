@@ -14,13 +14,13 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.common.TrackApplication;
+import com.example.administrator.employeenote.utils.LoadDialog;
 import com.example.administrator.employeenote.utils.PlayerSingleton;
 import com.jzxiang.pickerview.TimePickerDialog;
 import com.jzxiang.pickerview.data.Type;
@@ -29,10 +29,7 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
-import dmax.dialog.SpotsDialog;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -46,7 +43,7 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 
-import static com.example.administrator.employeenote.utils.DataUtils.getDateToString;
+import static com.example.administrator.employeenote.utils.DateUtils.unixToString;
 
 public class AddMissionActivity extends AppCompatActivity {
     private ImageView back;
@@ -94,7 +91,7 @@ public class AddMissionActivity extends AppCompatActivity {
             }
         });
 
-        mtime.setText(getDateToString(System.currentTimeMillis()));
+        mtime.setText(unixToString(System.currentTimeMillis()));
         date = mtime.getText().toString();
 
         mtime.setOnClickListener(new View.OnClickListener() {
@@ -104,7 +101,7 @@ public class AddMissionActivity extends AppCompatActivity {
                         .setCallBack(new OnDateSetListener() {
                             @Override
                             public void onDateSet(TimePickerDialog timePickerView, long millseconds) {
-                                mtime.setText(getDateToString(millseconds));
+                                mtime.setText(unixToString(millseconds));
                             }
                         })
                         .setCancelStringId("取消")
@@ -250,10 +247,7 @@ public class AddMissionActivity extends AppCompatActivity {
     }
 
     public void initRetrofit() {
-
-        final AlertDialog loaddialog = new SpotsDialog(AddMissionActivity.this);
-        loaddialog.show();
-
+        LoadDialog.showDialog(this);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(tapp.SERVERURL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -278,7 +272,7 @@ public class AddMissionActivity extends AppCompatActivity {
             public void onResponse(Call<ResponseBody> call,
                                    Response<ResponseBody> response) {
                 if (response.isSuccessful()) { //上传成功
-                    loaddialog.cancel();
+                    LoadDialog.cancelDialog();
                     Toast.makeText(AddMissionActivity.this, "success", Toast.LENGTH_SHORT).show();
                     new AlertDialog.Builder(AddMissionActivity.this)
                             .setMessage("提交成功")

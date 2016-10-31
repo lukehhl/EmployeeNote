@@ -60,7 +60,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="10dp"
-                android:text="local"
+                android:text="定位失败"
                 android:textSize="12dp" />
         </RelativeLayout>
     </LinearLayout>

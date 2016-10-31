@@ -18,6 +18,7 @@ import com.example.administrator.employeenote.adapter.EmployeeAdapter;
 import com.example.administrator.employeenote.common.TrackApplication;
 import com.example.administrator.employeenote.entity.EmployeeData;
 import com.example.administrator.employeenote.entity.RealLocationData;
+import com.example.administrator.employeenote.utils.LoadDialog;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -101,6 +102,7 @@ public class EmployeeListActivity extends AppCompatActivity {
     }
 
     public List<EmployeeData> initRetrofit() {
+        LoadDialog.showDialog(this);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(tapp.SERVERURL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -172,6 +174,7 @@ public class EmployeeListActivity extends AppCompatActivity {
                     setLoc();
                     adapter = new EmployeeAdapter(EmployeeListActivity.this, elist);
                     listview.setAdapter(adapter);
+                    LoadDialog.cancelDialog();
                     Log.d(TAG, new Gson().toJson(realData));
                 } else {
                     try {
@@ -191,10 +194,11 @@ public class EmployeeListActivity extends AppCompatActivity {
 
     private void setLoc() {
         for (int i = 0; i < elist.size(); i++) {
-            if (realData.getEntities()!=null) {
+            if (realData != null && realData.getEntities() != null) {
                 for (int j = 0; j < realData.getEntities().size(); j++) {
                     if (elist.get(i).getEid().equals(realData.getEntities().get(j).getEntity_name())) {
-                        LatLng point = new LatLng(realData.getEntities().get(j).getRealtime_point().getLocation().get(0), realData.getEntities().get(j).getRealtime_point().getLocation().get(1));
+                        LatLng point = new LatLng(realData.getEntities().get(j).getRealtime_point().getLocation().get(0)
+                                , realData.getEntities().get(j).getRealtime_point().getLocation().get(1));
                         if (tapp.isInJM(point)) {
                             elist.get(i).setElocal("集美厂区");
                         } else if (tapp.isInTA(point)) {

@@ -19,6 +19,14 @@ public class MissionData {
         this.vcustomer = vcustomer;
     }
 
+    public String getVcustomer() {
+        return vcustomer;
+    }
+
+    public void setVcustomer(String vcustomer) {
+        this.vcustomer = vcustomer;
+    }
+
     public int getVsign() {
         return vsign;
     }

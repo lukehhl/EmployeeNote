@@ -14,10 +14,7 @@ import com.jzxiang.pickerview.TimePickerDialog;
 import com.jzxiang.pickerview.data.Type;
 import com.jzxiang.pickerview.listener.OnDateSetListener;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import static com.example.administrator.employeenote.utils.DataUtils.getDateToString;
+import static com.example.administrator.employeenote.utils.DateUtils.unixToString;
 
 public class AgendaInfoActivity extends AppCompatActivity {
     private TextView mstartime, mendtime, mtype;
@@ -53,7 +50,7 @@ public class AgendaInfoActivity extends AppCompatActivity {
                         .setCallBack(new OnDateSetListener() {
                             @Override
                             public void onDateSet(TimePickerDialog timePickerView, long millseconds) {
-                                mstartime.setText(getDateToString(millseconds));
+                                mstartime.setText(unixToString(millseconds));
                             }
                         })
                         .setCancelStringId("取消")
@@ -78,7 +75,7 @@ public class AgendaInfoActivity extends AppCompatActivity {
                         .setCallBack(new OnDateSetListener() {
                             @Override
                             public void onDateSet(TimePickerDialog timePickerView, long millseconds) {
-                                mendtime.setText(getDateToString(millseconds));
+                                mendtime.setText(unixToString(millseconds));
                             }
                         })
                         .setCancelStringId("取消")

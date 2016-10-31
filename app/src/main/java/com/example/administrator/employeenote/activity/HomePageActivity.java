@@ -65,8 +65,10 @@ public class HomePageActivity extends AppCompatActivity {
         mename = (TextView) findViewById(R.id.ename);
         mdate = (TextView) findViewById(R.id.date);
         mweekdate = (TextView) findViewById(R.id.weekdate);
-//        mename.setText(tapp.getPerson().getEname());
+        mename.setText(tapp.getPerson().getEname());
 
+        mdate.setText(com.example.administrator.employeenote.utils.DateUtils.unixToString(System.currentTimeMillis()));
+        mweekdate.setText(com.example.administrator.employeenote.utils.DateUtils.unixToWeek(System.currentTimeMillis()));
         startMap();
 
         gview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
