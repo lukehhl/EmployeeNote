@@ -54,14 +54,14 @@ public class AgendaAdapter extends BaseAdapter {
         hold.weekView.setText(data.get(position).getWeek());
         hold.deslsView.setAdapter(new EventAdapter(context, data.get(position).getEventDatas()));
         setListViewHeightBasedOnChildren(hold.deslsView);
-        hold.deslsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position1, long id) {
-                Intent it = new Intent(context, AgendaInfoActivity.class);
-                it.putExtra("event_id", data.get(position).getEventDatas().get(position1).getEvent_id());
-                context.startActivity(it);
-            }
-        });
+//        hold.deslsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position1, long id) {
+//                Intent it = new Intent(context, AgendaInfoActivity.class);
+//                it.putExtra("event_id", data.get(position).getEventDatas().get(position1).getEvent_id());
+//                context.startActivity(it);
+//            }
+//        });
 
         return convertView;
     }

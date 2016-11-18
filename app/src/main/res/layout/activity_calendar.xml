@@ -36,11 +36,7 @@
         android:layout_height="wrap_content"
         android:padding="15dp"
         android:orientation="vertical">
-        <Button
-            android:id="@+id/fromobile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="从手机同步"/>
+
     <com.dsw.calendar.views.CircleCalendarView
         android:id="@+id/calendar_view"
         android:layout_width="match_parent"
