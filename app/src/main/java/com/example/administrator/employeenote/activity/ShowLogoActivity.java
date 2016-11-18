@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 
 import com.example.administrator.employeenote.R;
+import com.example.administrator.employeenote.common.CalTestActivity;
 import com.example.administrator.employeenote.common.TestActivity;
 import com.example.administrator.employeenote.widget.LogoView;
 
@@ -35,7 +36,7 @@ public class ShowLogoActivity extends AppCompatActivity {
 //    }
 
     public void gotoMainActivity() {
-        Intent intent = new Intent(ShowLogoActivity.this, LoginActivity.class);
+        Intent intent = new Intent(ShowLogoActivity.this, CalendarActivity.class);
         startActivity(intent);
         finish();
     }

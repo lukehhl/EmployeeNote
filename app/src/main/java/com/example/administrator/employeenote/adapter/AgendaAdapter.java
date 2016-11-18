@@ -7,13 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.activity.AgendaInfoActivity;
 import com.example.administrator.employeenote.entity.AgendaData;
-import com.example.administrator.employeenote.entity.EmployeeData;
 
 import java.util.List;
 
@@ -53,6 +53,7 @@ public class AgendaAdapter extends BaseAdapter {
         hold.dateView.setText(data.get(position).getDate());
         hold.weekView.setText(data.get(position).getWeek());
         hold.deslsView.setAdapter(new EventAdapter(context, data.get(position).getEventDatas()));
+        setListViewHeightBasedOnChildren(hold.deslsView);
         hold.deslsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position1, long id) {
@@ -83,5 +84,23 @@ public class AgendaAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+    public void setListViewHeightBasedOnChildren(ListView listView) {
+        // 获取ListView对应的Adapter
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {        return;    }
+        int totalHeight = 0;
+        for (int i = 0, len = listAdapter.getCount(); i < len; i++) {
+            // listAdapter.getCount()返回数据项的数目
+            View listItem = listAdapter.getView(i, null, listView);
+            // 计算子项View 的宽高
+            listItem.measure(0, 0);
+            // 统计所有子项的总高度
+            totalHeight += listItem.getMeasuredHeight();
+        }
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight+ (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
     }
 }

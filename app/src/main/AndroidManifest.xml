@@ -79,7 +79,8 @@
         <activity android:name=".activity.CalendarActivity" />
         <activity android:name=".activity.AgendaInfoActivity" />
         <activity android:name=".activity.UpdMissionActivity" />
-        <activity android:name=".activity.MissionInfoActivity"></activity>
-    </application>
+        <activity android:name=".activity.MissionInfoActivity" />
+        <activity android:name=".common.CalTestActivity" />
+           </application>
 
 </manifest>

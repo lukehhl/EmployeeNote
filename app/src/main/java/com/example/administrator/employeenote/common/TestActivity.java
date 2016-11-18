@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.administrator.employeenote.R;
 import com.example.administrator.employeenote.entity.AgendaData;
+import com.example.administrator.employeenote.entity.EventData;
 
 import java.util.Calendar;
 import java.util.List;
@@ -82,7 +83,10 @@ public class TestActivity extends Activity implements View.OnClickListener {
                 while (eventCursor.moveToNext()) {
 //                    eventCursor.moveToLast();
                     String eventTitle = eventCursor.getString(eventCursor.getColumnIndex("title"));
-                    tx.setText(tx.getText() + "   " + eventTitle);
+                    String eventStime = eventCursor.getString(eventCursor.getColumnIndex("dtstart"));
+                    String eventEtime = eventCursor.getString(eventCursor.getColumnIndex("dtend"));
+                    String eventDiscr = eventCursor.getString(eventCursor.getColumnIndex("DESCRIPTION"));
+                    tx.setText(tx.getText() + "   " + eventTitle+ "   " + eventStime+ "   " + eventEtime+ "   " + eventDiscr);
 //                    Toast.makeText(TestActivity.this, eventTitle, Toast.LENGTH_LONG).show();
                 }
             }
@@ -125,7 +129,7 @@ public class TestActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    private void insAgenda(List<AgendaData.EventData> eventDatas) {
+    private void insAgenda(List<EventData> eventDatas) {
         for (int i = 0; i < eventDatas.size(); i++) {
             Cursor userCursor = getContentResolver().query(Uri.parse(calanderURL), null,
                     null, null, null);

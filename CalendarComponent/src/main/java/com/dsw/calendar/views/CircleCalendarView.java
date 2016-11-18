@@ -58,6 +58,7 @@ public class CircleCalendarView extends LinearLayout implements View.OnClickList
      */
     public void setDateClick(MonthView.IDateClick dateClick){
         circleMonthView.setDateClick(dateClick);
+
     }
 
     /**
